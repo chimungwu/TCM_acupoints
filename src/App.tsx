@@ -180,29 +180,7 @@ export default function App() {
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden">
-        {/* Top Header / Search */}
-        <header className="h-20 border-b border-tcm-gold/10 bg-white/80 backdrop-blur-md flex items-center px-8 shrink-0">
-          <div className="flex-1 max-w-2xl relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-tcm-gold" size={20} />
-            <input
-              type="text"
-              placeholder="搜尋穴位名稱、代碼或經絡..."
-              className="w-full pl-12 pr-4 py-3 bg-tcm-paper/50 border border-tcm-gold/10 rounded-2xl text-sm focus:outline-none focus:ring-2 focus:ring-tcm-gold/20 transition-all"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="ml-auto flex items-center gap-4">
-            <div className="hidden sm:flex flex-col items-end">
-              <span className="text-xs font-bold text-tcm-clay/40 uppercase tracking-widest">系統狀態</span>
-              <span className="text-xs font-medium text-emerald-600 flex items-center gap-1">
-                <div className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" /> 資料庫已連線
-              </span>
-            </div>
-          </div>
-        </header>
-
-        {/* View Content */}
+        {/* Main Content Area */}
         <main className="flex-1 overflow-y-auto custom-scrollbar p-8">
           <AnimatePresence mode="wait">
             {activeView === 'encyclopedia' && (
@@ -216,19 +194,31 @@ export default function App() {
                 {/* Left: List */}
                 <div className="lg:col-span-4 flex flex-col gap-4">
                   <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-sm overflow-hidden flex flex-col h-full">
-                    <div className="p-4 border-b border-tcm-gold/5 bg-tcm-paper flex items-center justify-between">
-                      <h2 className="font-serif font-bold text-tcm-ink flex items-center gap-2">
-                        <Filter size={16} className="text-tcm-gold" /> 穴位瀏覽
-                      </h2>
-                      <select 
-                        className="text-xs bg-white border border-tcm-gold/20 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-tcm-gold"
-                        value={filterMeridian}
-                        onChange={(e) => setFilterMeridian(e.target.value)}
-                      >
-                        {meridians.map(m => (
-                          <option key={m} value={m}>{m === 'all' ? '全部經絡' : m}</option>
-                        ))}
-                      </select>
+                    <div className="p-4 border-b border-tcm-gold/5 bg-tcm-paper flex flex-col gap-4">
+                      <div className="flex items-center justify-between">
+                        <h2 className="font-serif font-bold text-tcm-ink flex items-center gap-2">
+                          <Filter size={16} className="text-tcm-gold" /> 穴位瀏覽
+                        </h2>
+                        <select 
+                          className="text-xs bg-white border border-tcm-gold/20 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-tcm-gold"
+                          value={filterMeridian}
+                          onChange={(e) => setFilterMeridian(e.target.value)}
+                        >
+                          {meridians.map(m => (
+                            <option key={m} value={m}>{m === 'all' ? '全部經絡' : m}</option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="relative">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-tcm-gold" size={16} />
+                        <input
+                          type="text"
+                          placeholder="搜尋穴位名稱、代碼..."
+                          className="w-full pl-9 pr-4 py-2 bg-white border border-tcm-gold/10 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-tcm-gold/20 transition-all"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                      </div>
                     </div>
                     <div className="flex-1 overflow-y-auto custom-scrollbar">
                       <div className="divide-y divide-tcm-gold/5">
@@ -711,7 +701,7 @@ export default function App() {
                           <div className="flex items-center gap-6">
                             <div className="w-20 h-20 bg-tcm-clay text-white rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-tcm-clay/20">
                               <span className="text-3xl font-serif font-bold">{LING_GUI_POINTS[lingGuiNum].hexagram}</span>
-                              <span className="text-[10px] font-bold uppercase tracking-tighter">Hexagram</span>
+                              <span className="text-[10px] font-bold tracking-tighter">卦象</span>
                             </div>
                             <div className="space-y-1">
                               <div className="text-sm text-tcm-clay/60">當前開穴：</div>
