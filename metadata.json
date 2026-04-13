@@ -1,0 +1,5 @@
+{
+  "name": "中醫配穴系統 (TCM Acupoint Selection System)",
+  "description": "一個專業的中醫穴位查詢與配穴建議系統，包含完整的經絡穴位資料庫與特性分析。",
+  "requestFramePermissions": []
+}

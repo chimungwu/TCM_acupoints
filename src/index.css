@@ -1,0 +1,63 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+TC:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", "Noto Sans TC", ui-sans-serif, system-ui, sans-serif;
+  --font-serif: "Noto Serif TC", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* TCM Professional Palette - Refined for better brightness */
+  --color-tcm-ink: #2D2926;      /* Lighter charcoal, less harsh */
+  --color-tcm-paper: #FBF9F4;    /* Slightly brighter paper */
+  --color-tcm-gold: #B4946A;     /* Muted gold */
+  --color-tcm-gold-light: #D4C4A8;
+  --color-tcm-clay: #8C6A5A;     /* Earthy brown */
+  --color-tcm-jade: #5B7369;     /* Slightly lighter sage green */
+  --color-tcm-jade-dark: #3D4D46; /* Deep jade for sidebar */
+  --color-tcm-cinnabar: #A64433; /* Traditional red */
+}
+
+@layer base {
+  body {
+    @apply bg-tcm-paper text-tcm-ink antialiased;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif tracking-tight;
+  }
+}
+
+@layer components {
+  .tcm-card {
+    @apply bg-white border border-tcm-gold/10 rounded-[2rem] shadow-[0_4px_20px_rgba(26,22,20,0.03)] transition-all duration-300;
+  }
+
+  .tcm-card-hover {
+    @apply hover:shadow-[0_20px_40px_rgba(26,22,20,0.06)] hover:-translate-y-1;
+  }
+
+  .tcm-button-primary {
+    @apply bg-tcm-clay text-white px-6 py-3 rounded-2xl font-bold transition-all hover:bg-tcm-ink active:scale-95 shadow-lg shadow-tcm-clay/20;
+  }
+
+  .tcm-button-outline {
+    @apply border-2 border-tcm-gold/20 text-tcm-clay px-6 py-3 rounded-2xl font-bold transition-all hover:border-tcm-gold hover:bg-tcm-gold/5 active:scale-95;
+  }
+
+  .tcm-badge {
+    @apply px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest;
+  }
+
+  /* Custom Scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-tcm-gold/20 rounded-full hover:bg-tcm-gold/40 transition-colors;
+  }
+}
