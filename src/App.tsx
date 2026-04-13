@@ -940,6 +940,29 @@ export default function App() {
                       <p>醫學的進步，不應是捨棄傳統，而是利用新時代的工具去更深刻地解讀傳統。數據與演算法可以輔助決策，但無法取代醫師指尖下的溫度，更無法取代對經典條文的透徹領悟。</p>
                       <p>這個網站是我個人學習路上的紀錄與分享。願它能成為各位在針灸探索路上的一盞微光，輔助思考、引發討論，讓我們在追求精準醫療的同時，依然能保有一顆對古老智慧敬畏的心。</p>
                     </section>
+
+                    <section className="bg-tcm-paper rounded-2xl p-6 border border-tcm-gold/10">
+                      <h3 className="text-xl font-bold text-tcm-ink mb-3">授權資訊</h3>
+                      <p className="text-sm mb-3">
+                        本專案採用 <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> 授權。
+                      </p>
+                      <ul className="list-disc pl-5 space-y-1 text-sm">
+                        <li>你可以分享、重製、改作，包含商業用途。</li>
+                        <li>使用時請標註作者與來源，並附上授權連結。</li>
+                        <li>若有修改內容，請清楚註明已修改。</li>
+                      </ul>
+                      <p className="text-sm mt-3">
+                        授權條款：
+                        <a
+                          href="https://creativecommons.org/licenses/by/4.0/"
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-tcm-jade font-semibold hover:underline ml-1"
+                        >
+                          https://creativecommons.org/licenses/by/4.0/
+                        </a>
+                      </p>
+                    </section>
                   </div>
                 </div>
               </motion.div>
