@@ -101,7 +101,6 @@ export default function App() {
     { id: 'encyclopedia', label: '穴位百科', icon: BookOpen },
     { id: 'principles', label: '配穴原則', icon: GraduationCap },
     { id: 'calculation', label: '時辰配穴', icon: Calculator },
-    { id: 'prescription', label: '配穴方案', icon: Layout },
     { id: 'author', label: '關於作者', icon: Info },
   ];
 
@@ -114,8 +113,8 @@ export default function App() {
             <Activity size={24} />
           </div>
           <div className="hidden md:block overflow-hidden">
-            <h1 className="text-lg font-serif font-bold tracking-tight whitespace-nowrap text-tcm-ink">中醫配穴教學</h1>
-            <p className="text-[10px] text-tcm-clay font-medium uppercase tracking-widest">TCM Education</p>
+            <h1 className="text-lg font-serif font-bold tracking-tight whitespace-nowrap text-tcm-ink">靈樞流注精要</h1>
+            <p className="text-[10px] text-tcm-clay font-medium uppercase tracking-widest">阿銘醫師針灸配穴筆記</p>
           </div>
         </div>
 
@@ -132,11 +131,6 @@ export default function App() {
             >
               <item.icon size={20} className={activeView === item.id ? 'text-tcm-jade' : 'group-hover:text-tcm-jade'} />
               <span className="hidden md:block font-medium text-sm">{item.label}</span>
-              {item.id === 'prescription' && prescription.length > 0 && (
-                <span className="ml-auto hidden md:flex w-5 h-5 bg-tcm-cinnabar text-white text-[10px] font-bold items-center justify-center rounded-full">
-                  {prescription.length}
-                </span>
-              )}
             </button>
           ))}
         </nav>
@@ -163,15 +157,20 @@ export default function App() {
                 className="w-full bg-white border border-tcm-gold/20 rounded-lg p-2 text-xs text-tcm-ink focus:outline-none focus:ring-1 focus:ring-tcm-jade"
               />
             ) : (
-              <div className="text-lg font-serif font-bold text-tcm-clay">
-                {ganzhi.year}年 {ganzhi.month}月 {ganzhi.day}日 {ganzhi.hour}時
+              <div className="text-2xl font-serif font-bold text-tcm-jade flex flex-col items-center gap-1">
+                <div>{ganzhi.day} 日</div>
+                <div>{ganzhi.hour} 時</div>
               </div>
             )}
 
             <div className="pt-2 border-t border-tcm-gold/5">
-              <div className="text-[10px] text-tcm-clay/40 flex items-center justify-between">
-                <span>{effectiveTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                <span>{currentShichen}時：{zwlzMeridian.replace('手', '').replace('足', '')}</span>
+              <div className="text-[10px] text-tcm-clay/60 font-bold space-y-1">
+                <div className="text-center">
+                  {effectiveTime.getFullYear()}年 {effectiveTime.getMonth() + 1}月 {effectiveTime.getDate()}日 {effectiveTime.getHours()}時 {effectiveTime.getMinutes().toString().padStart(2, '0')}分
+                </div>
+                <div className="text-center text-tcm-jade">
+                  {currentShichen}時：{zwlzMeridian.replace('手', '').replace('足', '')}
+                </div>
               </div>
             </div>
           </div>
