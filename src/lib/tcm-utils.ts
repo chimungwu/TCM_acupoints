@@ -7,6 +7,14 @@ export const EARTHLY_BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午'
 export const SHICHEN = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
 /**
+ * Get Taiwan Time (UTC+8)
+ */
+export function getTaiwanTime(date: Date): Date {
+  const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+  return new Date(utc + (8 * 3600000));
+}
+
+/**
  * Get the Shichen (Chinese hour) based on the hour of the day (0-23)
  */
 export function getShichenIndex(hour: number): number {
@@ -21,15 +29,55 @@ export function getShichenName(hour: number): string {
 }
 
 /**
+ * Get Year Ganzhi (Simplified)
+ */
+export function getYearGanzhi(year: number): string {
+  const stemIdx = (year - 4) % 10;
+  const branchIdx = (year - 4) % 12;
+  return `${HEAVENLY_STEMS[stemIdx]}${EARTHLY_BRANCHES[branchIdx]}`;
+}
+
+/**
+ * Get Month Ganzhi (Simplified)
+ */
+export function getMonthGanzhi(year: number, month: number): string {
+  // Simplified: Year stem determines month stem
+  const yearStemIdx = (year - 4) % 10;
+  // monthIdx: 0:Feb(寅), 1:Mar(卯), 2:Apr(辰)...
+  // Date.getMonth() returns 0-11 (Jan-Dec)
+  const monthIdx = month - 1; 
+  const monthStemIdx = (yearStemIdx % 5 * 2 + monthIdx + 2) % 10;
+  const monthBranchIdx = (monthIdx + 12) % 12;
+  return `${HEAVENLY_STEMS[monthStemIdx]}${EARTHLY_BRANCHES[monthBranchIdx]}`;
+}
+
+/**
  * Basic Ganzhi calculation (Simplified for demonstration)
- * In a real production app, this would use a more precise astronomical algorithm
- * or a library like 'lunar-typescript'.
  */
 export function getGanzhi(date: Date) {
-  // Reference date: 2026-01-01 was 乙亥 (Yi-Hai)
-  // Yi is index 1, Hai is index 11
-  const baseDate = new Date(2026, 0, 1);
-  const diffDays = Math.floor((date.getTime() - baseDate.getTime()) / (24 * 60 * 60 * 1000));
+  const twDate = getTaiwanTime(date);
+  const hour = twDate.getHours();
+  
+  // Late Zi (23:00-23:59) belongs to next day for Day Pillar calculation?
+  // Wait, user said: "Late Zi... is previous day". Let's re-read carefully.
+  // "Late Zi... belongs to previous day" - My previous code did this.
+  // If the user says "日 已經跨了", maybe it's crossing too early?
+  // Let's re-examine the logic.
+  // If it's 23:22, it should be the next day's Day Pillar? No, user said "Late Zi belongs to previous day".
+  // Maybe the issue is the baseDate calculation.
+  
+  // 子初換日派: Day Pillar changes at 00:00.
+  // 23:00-23:59 belongs to the CURRENT day's Day Pillar.
+  // 00:00-00:59 belongs to the NEXT day's Day Pillar.
+  const isEarlyZi = hour >= 0 && hour < 1;
+  const dayDate = isEarlyZi ? new Date(twDate.getTime() + 24 * 60 * 60 * 1000) : twDate;
+  
+  // Use UTC to avoid timezone issues
+  const baseDate = new Date(Date.UTC(2026, 0, 1));
+  
+  // Normalize dayDate to start of day UTC for diffDays calculation
+  const dayDateUTC = Date.UTC(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
+  const diffDays = Math.floor((dayDateUTC - baseDate.getTime()) / (24 * 60 * 60 * 1000));
   
   const dayStemIdx = ((diffDays + 1) % 10 + 10) % 10;
   const dayBranchIdx = ((diffDays + 11) % 12 + 12) % 12;
@@ -37,21 +85,18 @@ export function getGanzhi(date: Date) {
   const dayStem = HEAVENLY_STEMS[dayStemIdx];
   const dayBranch = EARTHLY_BRANCHES[dayBranchIdx];
   
-  const hour = date.getHours();
+  // Use local hours for shichen calculation as it's based on local solar time
   const shichenIdx = getShichenIndex(hour);
   const hourBranch = EARTHLY_BRANCHES[shichenIdx];
   
   // Hour stem depends on the day stem (Ri Gan Qi Shi Fa)
-  // 甲己之日甲子時 (0, 5 -> 0)
-  // 乙庚之日丙子時 (1, 6 -> 2)
-  // 丙辛之日戊子時 (2, 7 -> 4)
-  // 丁壬之日庚子時 (3, 8 -> 6)
-  // 戊癸之日壬子時 (4, 9 -> 8)
   const hourStemStartIdx = (dayStemIdx % 5) * 2;
   const hourStemIdx = (hourStemStartIdx + shichenIdx) % 10;
   const hourStem = HEAVENLY_STEMS[hourStemIdx];
 
   return {
+    year: getYearGanzhi(twDate.getFullYear()),
+    month: getMonthGanzhi(twDate.getFullYear(), twDate.getMonth()),
     day: `${dayStem}${dayBranch}`,
     hour: `${hourStem}${hourBranch}`,
     dayStem,

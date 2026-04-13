@@ -163,8 +163,8 @@ export default function App() {
                 className="w-full bg-white border border-tcm-gold/20 rounded-lg p-2 text-xs text-tcm-ink focus:outline-none focus:ring-1 focus:ring-tcm-jade"
               />
             ) : (
-              <div className="text-xl font-serif font-bold text-tcm-clay">
-                {ganzhi.day}日 {ganzhi.hour}時
+              <div className="text-lg font-serif font-bold text-tcm-clay">
+                {ganzhi.year}年 {ganzhi.month}月 {ganzhi.day}日 {ganzhi.hour}時
               </div>
             )}
 
