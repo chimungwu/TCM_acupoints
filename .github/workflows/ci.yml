@@ -1,6 +1,5 @@
 name: CI
 
-# 這行設定確保只要有程式碼推送到 main 分支，就會自動啟動
 on:
   push:
     branches: [ main ]
@@ -17,10 +16,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
-          
+          # 移除 cache: 'npm' 這一行，這樣就不會強制檢查 package-lock.json
+
       - name: Install dependencies
-        run: npm ci
+        run: npm install # 改用 npm install，它會自動產生或更新依賴
         
       - name: Build
         run: npm run build
