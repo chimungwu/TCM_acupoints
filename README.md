@@ -30,3 +30,8 @@ View your app in AI Studio: https://ai.studio/apps/af775547-8de3-406a-b238-e1f3f
 Notes:
 - This project is a Vite app. Do not deploy raw source files directly.
 - The site must serve the build output from `dist/`.
+
+## License
+
+This project is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).  
+See [LICENSE](./LICENSE) for details.
