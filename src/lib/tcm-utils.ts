@@ -52,44 +52,48 @@ export function getMonthGanzhi(year: number, month: number): string {
 }
 
 /**
- * Basic Ganzhi calculation (Simplified for demonstration)
+ * Basic Ganzhi calculation
  */
-export function getGanzhi(date: Date) {
+export function getGanzhi(date: Date, useEarlyLateZi: boolean = false) {
   const twDate = getTaiwanTime(date);
   const hour = twDate.getHours();
   
-  // Late Zi (23:00-23:59) belongs to next day for Day Pillar calculation?
-  // Wait, user said: "Late Zi... is previous day". Let's re-read carefully.
-  // "Late Zi... belongs to previous day" - My previous code did this.
-  // If the user says "日 已經跨了", maybe it's crossing too early?
-  // Let's re-examine the logic.
-  // If it's 23:22, it should be the next day's Day Pillar? No, user said "Late Zi belongs to previous day".
-  // Maybe the issue is the baseDate calculation.
+  // Determine the date to use for Day Pillar calculation
+  let dayDate = new Date(twDate);
   
-  // 子初換日派: Day Pillar changes at 00:00.
-  // 23:00-23:59 belongs to the CURRENT day's Day Pillar.
-  // 00:00-00:59 belongs to the NEXT day's Day Pillar.
-  const isEarlyZi = hour >= 0 && hour < 1;
-  const dayDate = isEarlyZi ? new Date(twDate.getTime() + 24 * 60 * 60 * 1000) : twDate;
+  if (useEarlyLateZi) {
+    // 早晚子時 (子正換日): 00:00 才換日柱
+    // 23:00-23:59 (晚子時) 屬於當天
+    // 00:00-00:59 (早子時) 屬於當天 (月曆上的當天)
+    // 不需要調整 dayDate
+  } else {
+    // 一般計算 (子初換日): 23:00 就換日柱
+    if (hour >= 23) {
+      dayDate.setDate(dayDate.getDate() + 1);
+    }
+  }
   
-  // Use UTC to avoid timezone issues
-  const baseDate = new Date(Date.UTC(2026, 0, 1));
+  // Use UTC to avoid timezone issues for day difference
+  const baseDate = new Date(Date.UTC(2026, 0, 1)); // 2026-01-01 is 乙亥日 (Stem 1, Branch 11)
+  // Wait, let's verify 2026-01-01 Ganzhi. 
+  // 2026-01-01 is 乙亥 (Stem index 1, Branch index 11)
   
-  // Normalize dayDate to start of day UTC for diffDays calculation
   const dayDateUTC = Date.UTC(dayDate.getFullYear(), dayDate.getMonth(), dayDate.getDate());
   const diffDays = Math.floor((dayDateUTC - baseDate.getTime()) / (24 * 60 * 60 * 1000));
   
+  // 2026-01-01 is 乙亥 (1, 11)
   const dayStemIdx = ((diffDays + 1) % 10 + 10) % 10;
   const dayBranchIdx = ((diffDays + 11) % 12 + 12) % 12;
   
   const dayStem = HEAVENLY_STEMS[dayStemIdx];
   const dayBranch = EARTHLY_BRANCHES[dayBranchIdx];
   
-  // Use local hours for shichen calculation as it's based on local solar time
+  // Hour Branch
   const shichenIdx = getShichenIndex(hour);
   const hourBranch = EARTHLY_BRANCHES[shichenIdx];
   
-  // Hour stem depends on the day stem (Ri Gan Qi Shi Fa)
+  // Hour Stem (Ri Gan Qi Shi Fa)
+  // 甲己還加甲, 乙庚丙作初, 丙辛從戊起, 丁壬庚子居, 戊癸何方發, 壬子是真途
   const hourStemStartIdx = (dayStemIdx % 5) * 2;
   const hourStemIdx = (hourStemStartIdx + shichenIdx) % 10;
   const hourStem = HEAVENLY_STEMS[hourStemIdx];
@@ -135,21 +139,23 @@ export interface NaZiFaDetail {
   shuStreamPoint: string;
   backShu: string;
   frontMu: string;
+  yuanPoint: string;
+  luoPoint: string;
 }
 
 export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
-  '寅': { meridian: '手太陰肺經', motherPoint: '太淵', sonPoint: '尺澤', shuStreamPoint: '太淵', backShu: '肺俞', frontMu: '中府' },
-  '卯': { meridian: '手陽明大腸經', motherPoint: '曲池', sonPoint: '二間', shuStreamPoint: '三間', backShu: '大腸俞', frontMu: '天樞' },
-  '辰': { meridian: '足陽明胃經', motherPoint: '解谿', sonPoint: '厲兌', shuStreamPoint: '陷谷', backShu: '胃俞', frontMu: '中脘' },
-  '巳': { meridian: '足太陰脾經', motherPoint: '大都', sonPoint: '商丘', shuStreamPoint: '太白', backShu: '脾俞', frontMu: '章門' },
-  '午': { meridian: '手少陰心經', motherPoint: '少衝', sonPoint: '神門', shuStreamPoint: '神門', backShu: '心俞', frontMu: '巨闕' },
-  '未': { meridian: '手太陽小腸經', motherPoint: '後溪', sonPoint: '小海', shuStreamPoint: '後溪', backShu: '小腸俞', frontMu: '關元' },
-  '申': { meridian: '足太陽膀胱經', motherPoint: '至陰', sonPoint: '束骨', shuStreamPoint: '束骨', backShu: '膀胱俞', frontMu: '中極' },
-  '酉': { meridian: '足少陰腎經', motherPoint: '復溜', sonPoint: '湧泉', shuStreamPoint: '太溪', backShu: '腎俞', frontMu: '京門' },
-  '戌': { meridian: '手厥陰心包經', motherPoint: '中衝', sonPoint: '大陵', shuStreamPoint: '大陵', backShu: '厥陰俞', frontMu: '膻中' },
-  '亥': { meridian: '手少陽三焦經', motherPoint: '中渚', sonPoint: '天井', shuStreamPoint: '中渚', backShu: '三焦俞', frontMu: '石門' },
-  '子': { meridian: '足少陽膽經', motherPoint: '俠溪', sonPoint: '陽輔', shuStreamPoint: '足臨泣', backShu: '膽俞', frontMu: '日月' },
-  '丑': { meridian: '足厥陰肝經', motherPoint: '曲泉', sonPoint: '行間', shuStreamPoint: '太衝', backShu: '肝俞', frontMu: '期門' },
+  '寅': { meridian: '手太陰肺經', motherPoint: '太淵', sonPoint: '尺澤', shuStreamPoint: '太淵', backShu: '肺俞', frontMu: '中府', yuanPoint: '太淵', luoPoint: '列缺' },
+  '卯': { meridian: '手陽明大腸經', motherPoint: '曲池', sonPoint: '二間', shuStreamPoint: '三間', backShu: '大腸俞', frontMu: '天樞', yuanPoint: '合谷', luoPoint: '偏歷' },
+  '辰': { meridian: '足陽明胃經', motherPoint: '解谿', sonPoint: '厲兌', shuStreamPoint: '陷谷', backShu: '胃俞', frontMu: '中脘', yuanPoint: '衝陽', luoPoint: '豐隆' },
+  '巳': { meridian: '足太陰脾經', motherPoint: '大都', sonPoint: '商丘', shuStreamPoint: '太白', backShu: '脾俞', frontMu: '章門', yuanPoint: '太白', luoPoint: '公孫' },
+  '午': { meridian: '手少陰心經', motherPoint: '少衝', sonPoint: '神門', shuStreamPoint: '神門', backShu: '心俞', frontMu: '巨闕', yuanPoint: '神門', luoPoint: '通里' },
+  '未': { meridian: '手太陽小腸經', motherPoint: '後溪', sonPoint: '小海', shuStreamPoint: '後溪', backShu: '小腸俞', frontMu: '關元', yuanPoint: '腕骨', luoPoint: '支正' },
+  '申': { meridian: '足太陽膀胱經', motherPoint: '至陰', sonPoint: '束骨', shuStreamPoint: '束骨', backShu: '膀胱俞', frontMu: '中極', yuanPoint: '京骨', luoPoint: '飛揚' },
+  '酉': { meridian: '足少陰腎經', motherPoint: '復溜', sonPoint: '湧泉', shuStreamPoint: '太溪', backShu: '腎俞', frontMu: '京門', yuanPoint: '太溪', luoPoint: '大鐘' },
+  '戌': { meridian: '手厥陰心包經', motherPoint: '中衝', sonPoint: '大陵', shuStreamPoint: '大陵', backShu: '厥陰俞', frontMu: '膻中', yuanPoint: '大陵', luoPoint: '內關' },
+  '亥': { meridian: '手少陽三焦經', motherPoint: '中渚', sonPoint: '天井', shuStreamPoint: '中渚', backShu: '三焦俞', frontMu: '石門', yuanPoint: '陽池', luoPoint: '外關' },
+  '子': { meridian: '足少陽膽經', motherPoint: '俠溪', sonPoint: '陽輔', shuStreamPoint: '足臨泣', backShu: '膽俞', frontMu: '日月', yuanPoint: '丘墟', luoPoint: '光明' },
+  '丑': { meridian: '足厥陰肝經', motherPoint: '曲泉', sonPoint: '行間', shuStreamPoint: '太衝', backShu: '肝俞', frontMu: '期門', yuanPoint: '太衝', luoPoint: '蠡溝' },
 };
 
 export const FIVE_SHU_INDICATIONS = [

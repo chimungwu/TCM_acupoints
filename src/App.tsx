@@ -50,7 +50,16 @@ export default function App() {
   const [filterMeridian, setFilterMeridian] = useState<string>('all');
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isManualTime, setIsManualTime] = useState(false);
+  const [useEarlyLateZi, setUseEarlyLateZi] = useState(false);
   const [manualTimeStr, setManualTimeStr] = useState(new Date().toISOString().slice(0, 16));
+  const [previousView, setPreviousView] = useState<ViewType | null>(null);
+
+  // Helper to navigate to a point from other views
+  const navigateToPoint = (point: Acupoint) => {
+    setPreviousView(activeView);
+    setSelectedPoint(point);
+    setActiveView('encyclopedia');
+  };
 
   // Reset sub-views when active view changes
   useEffect(() => {
@@ -96,16 +105,11 @@ export default function App() {
     setPrescription(prescription.filter(p => p.id !== id));
   };
 
-  const ganzhi = getGanzhi(effectiveTime);
+  const ganzhi = getGanzhi(effectiveTime, useEarlyLateZi);
   const currentShichen = getShichenName(effectiveTime.getHours());
   const zwlzMeridian = ZI_WU_LIU_ZHU_MAP[currentShichen];
   const currentNaZi = NA_ZI_FA_DATA[currentShichen];
   
-  // Get next shichen for tonification (補法)
-  const currentShichenIdx = EARTHLY_BRANCHES.indexOf(currentShichen);
-  const nextShichen = EARTHLY_BRANCHES[(currentShichenIdx + 1) % 12];
-  const nextNaZi = NA_ZI_FA_DATA[nextShichen];
-
   const lingGuiNum = calculateLingGuiNumber(ganzhi.dayStem, ganzhi.dayBranch, ganzhi.hourStem, ganzhi.hourBranch);
   const lingGuiPointName = LING_GUI_POINTS[lingGuiNum].point;
 
@@ -137,7 +141,10 @@ export default function App() {
           {navItems.map((item) => (
             <button
               key={item.id}
-              onClick={() => setActiveView(item.id as ViewType)}
+              onClick={() => {
+                setActiveView(item.id as ViewType);
+                setPreviousView(null);
+              }}
               className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all group ${
                 activeView === item.id 
                   ? 'bg-tcm-paper text-tcm-ink shadow-sm border border-tcm-gold/30' 
@@ -177,6 +184,29 @@ export default function App() {
                 <div>{ganzhi.hour} 時</div>
               </div>
             )}
+
+            <div className="pt-2 space-y-2">
+              <div className="flex items-center justify-between px-1">
+                <span className="text-[9px] text-tcm-clay/40 font-bold uppercase tracking-tighter">換日邏輯</span>
+                <span className="text-[9px] text-tcm-jade font-bold">{useEarlyLateZi ? '00:00 換日' : '23:00 換日'}</span>
+              </div>
+              <button 
+                onClick={() => setUseEarlyLateZi(!useEarlyLateZi)}
+                className={`w-full text-[10px] font-bold py-2 rounded-xl border transition-all flex items-center justify-center gap-2 shadow-sm ${
+                  useEarlyLateZi 
+                    ? 'bg-tcm-jade text-white border-tcm-jade shadow-tcm-jade/20' 
+                    : 'bg-white border-tcm-gold/20 text-tcm-clay hover:border-tcm-gold/40'
+                }`}
+              >
+                <Zap size={10} className={useEarlyLateZi ? 'text-tcm-gold' : 'text-tcm-gold/40'} />
+                {useEarlyLateZi ? '早晚子時 (子正換日)' : '一般計算 (子初換日)'}
+              </button>
+              <p className="text-[9px] text-tcm-clay/40 text-center leading-tight px-2">
+                {useEarlyLateZi 
+                  ? '註：23:00-00:00 仍算當日(晚子)' 
+                  : '註：23:00 即進入隔天(子初)'}
+              </p>
+            </div>
 
             <div className="pt-2 border-t border-tcm-gold/5">
               <div className="text-[10px] text-tcm-clay/60 font-bold space-y-1">
@@ -322,7 +352,10 @@ export default function App() {
                             filteredPoints.map((point) => (
                               <button
                                 key={point.id}
-                                onClick={() => setSelectedPoint(point)}
+                                onClick={() => {
+                                  setSelectedPoint(point);
+                                  setPreviousView(null);
+                                }}
                                 className={`w-full text-left p-4 hover:bg-tcm-paper transition-colors flex items-center justify-between group ${selectedPoint?.id === point.id ? 'bg-tcm-paper' : ''}`}
                               >
                                 <div className="flex items-center gap-3">
@@ -379,6 +412,7 @@ export default function App() {
                                 onClick={() => {
                                   setSelectedPoint(point);
                                   setIsSearchModalOpen(false);
+                                  setPreviousView(null);
                                 }}
                                 className="p-4 bg-tcm-paper rounded-2xl hover:bg-tcm-gold/10 transition-colors text-left"
                               >
@@ -425,6 +459,7 @@ export default function App() {
                               onClick={() => {
                                 setSelectedPoint(point);
                                 setFilterMeridian('all');
+                                setPreviousView(null);
                               }}
                               className="p-4 bg-tcm-paper rounded-2xl hover:bg-tcm-gold/10 transition-colors text-left"
                             >
@@ -452,9 +487,24 @@ export default function App() {
                         <div className="p-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
                           {/* Left: Meridian and Name */}
                           <div className="lg:col-span-4 space-y-6 flex flex-col items-center text-center">
-                            <button onClick={() => setSelectedPoint(null)} className="lg:hidden p-2 text-tcm-clay bg-tcm-paper rounded-full self-start">
-                              <ChevronLeft size={20} />
-                            </button>
+                            <div className="w-full flex justify-between items-center lg:block">
+                              <button onClick={() => setSelectedPoint(null)} className="lg:hidden p-2 text-tcm-clay bg-tcm-paper rounded-full">
+                                <ChevronLeft size={20} />
+                              </button>
+                              
+                              {previousView && (
+                                <button 
+                                  onClick={() => {
+                                    setActiveView(previousView);
+                                    setPreviousView(null);
+                                  }}
+                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-tcm-paper text-tcm-jade hover:bg-tcm-jade hover:text-white transition-all font-bold text-xs rounded-xl border border-tcm-jade/20"
+                                >
+                                  <ChevronLeft size={14} /> 返回{navItems.find(n => n.id === previousView)?.label}
+                                </button>
+                              )}
+                            </div>
+                            
                             <div className="inline-flex items-center px-3 py-1 rounded-full bg-tcm-jade/10 text-tcm-jade text-[10px] font-bold tracking-widest uppercase">
                               {selectedPoint.meridian}
                             </div>
@@ -649,8 +699,7 @@ export default function App() {
                                         onClick={() => {
                                           const point = ACUPOINTS.find(ap => ap.name === p);
                                           if (point) {
-                                            setSelectedPoint(point);
-                                            setActiveView('encyclopedia');
+                                            navigateToPoint(point);
                                           }
                                         }}
                                         className="px-4 py-2 bg-white border border-tcm-gold/10 rounded-xl text-sm font-bold text-tcm-ink hover:bg-tcm-clay hover:text-white transition-all shadow-sm"
@@ -819,33 +868,31 @@ export default function App() {
                                   onClick={() => {
                                     const p = ACUPOINTS.find(ap => ap.name === currentNaZi.sonPoint);
                                     if (p) {
-                                      setSelectedPoint(p);
-                                      setActiveView('encyclopedia');
+                                      navigateToPoint(p);
                                     }
                                   }}
                                   className="font-bold text-tcm-cinnabar hover:underline"
                                 >
-                                  {currentNaZi.sonPoint} (當前時)
+                                  {currentNaZi.sonPoint}
                                 </button>
                               </div>
                               <div className="flex items-center justify-between text-xs">
                                 <span className="text-tcm-clay/60">虛證 (補母)</span>
                                 <button 
                                   onClick={() => {
-                                    const p = ACUPOINTS.find(ap => ap.name === nextNaZi.motherPoint);
+                                    const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherPoint);
                                     if (p) {
-                                      setSelectedPoint(p);
-                                      setActiveView('encyclopedia');
+                                      navigateToPoint(p);
                                     }
                                   }}
                                   className="font-bold text-tcm-jade hover:underline"
                                 >
-                                  {nextNaZi.motherPoint} ({nextShichen}時)
+                                  {currentNaZi.motherPoint}
                                 </button>
                               </div>
                             </div>
                             <p className="text-[10px] text-tcm-clay/40 italic leading-tight">
-                              實則瀉其子，虛則補其母。虛證需在納支時刻已過的下一個時辰針刺。
+                              實則瀉其子，虛則補其母。當令之時，氣血最旺，補母瀉子效果最佳。
                             </p>
                           </div>
 
@@ -860,8 +907,7 @@ export default function App() {
                                 onClick={() => {
                                   const p = ACUPOINTS.find(ap => ap.name === currentNaZi.shuStreamPoint);
                                   if (p) {
-                                    setSelectedPoint(p);
-                                    setActiveView('encyclopedia');
+                                    navigateToPoint(p);
                                   }
                                 }}
                                 className="px-3 py-1 bg-tcm-clay text-white text-xs font-bold rounded-lg hover:bg-tcm-ink transition-colors"
@@ -875,26 +921,42 @@ export default function App() {
                           </div>
 
                           {/* Method 3: Shu-Mu Combination */}
-                          <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3 md:col-span-2">
+                          <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
                             <h4 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
                               <Shield size={14} className="text-tcm-gold" /> 配俞募穴法
                             </h4>
                             <div className="flex flex-wrap gap-4">
                               <div className="flex items-center gap-2">
-                                <span className="text-xs text-tcm-clay/60">俞穴:</span>
-                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.shuStreamPoint); if (p) { setSelectedPoint(p); setActiveView('encyclopedia'); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.shuStreamPoint}</button>
-                              </div>
-                              <div className="flex items-center gap-2">
                                 <span className="text-xs text-tcm-clay/60">背俞:</span>
-                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.backShu); if (p) { setSelectedPoint(p); setActiveView('encyclopedia'); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.backShu}</button>
+                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.backShu); if (p) { navigateToPoint(p); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.backShu}</button>
                               </div>
                               <div className="flex items-center gap-2">
                                 <span className="text-xs text-tcm-clay/60">胸募:</span>
-                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.frontMu); if (p) { setSelectedPoint(p); setActiveView('encyclopedia'); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.frontMu}</button>
+                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.frontMu); if (p) { navigateToPoint(p); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.frontMu}</button>
                               </div>
                             </div>
                             <p className="text-[10px] text-tcm-clay/40 italic leading-tight">
-                              在流注時辰除取該經之俞穴外，並配合取有關之背俞及胸腹募穴。
+                              在流注時辰取該經之背俞及胸腹募穴。
+                            </p>
+                          </div>
+
+                          {/* Method 4: Yuan-Luo Combination */}
+                          <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
+                            <h4 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
+                              <Heart size={14} className="text-tcm-cinnabar" /> 原絡配穴法
+                            </h4>
+                            <div className="flex flex-wrap gap-4">
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-tcm-clay/60">本經原:</span>
+                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.yuanPoint); if (p) { navigateToPoint(p); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.yuanPoint}</button>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-xs text-tcm-clay/60">本經絡:</span>
+                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.luoPoint); if (p) { navigateToPoint(p); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.luoPoint}</button>
+                              </div>
+                            </div>
+                            <p className="text-[10px] text-tcm-clay/40 italic leading-tight">
+                              取當令經之原穴為主，配合其絡穴加強療效。
                             </p>
                           </div>
                         </div>
@@ -918,7 +980,7 @@ export default function App() {
                                       <span className="text-xs font-bold text-tcm-ink">{item.indication}</span>
                                       {point && (
                                         <button 
-                                          onClick={() => { setSelectedPoint(point); setActiveView('encyclopedia'); }}
+                                          onClick={() => { navigateToPoint(point); }}
                                           className="text-base font-serif font-bold text-tcm-ink hover:text-tcm-clay transition-colors px-2 py-1 bg-tcm-paper rounded-lg"
                                         >
                                           {point.name}
@@ -955,8 +1017,7 @@ export default function App() {
                                     onClick={() => {
                                       const p = ACUPOINTS.find(ap => ap.name === pName);
                                       if (p) {
-                                        setSelectedPoint(p);
-                                        setActiveView('encyclopedia');
+                                        navigateToPoint(p);
                                       }
                                     }}
                                     className="px-4 py-2 bg-white border border-tcm-gold/30 rounded-xl text-sm font-bold text-tcm-ink hover:bg-tcm-jade hover:text-white transition-all shadow-sm"
@@ -1006,8 +1067,7 @@ export default function App() {
                                 onClick={() => {
                                   const p = ACUPOINTS.find(ap => ap.name === lingGuiPointName);
                                   if (p) {
-                                    setSelectedPoint(p);
-                                    setActiveView('encyclopedia');
+                                    navigateToPoint(p);
                                   }
                                 }}
                                 className="text-4xl font-serif font-bold text-tcm-ink hover:text-tcm-clay transition-colors"
@@ -1039,8 +1099,7 @@ export default function App() {
                                       onClick={() => {
                                         const p = ACUPOINTS.find(ap => ap.name === pName);
                                         if (p) {
-                                          setSelectedPoint(p);
-                                          setActiveView('encyclopedia');
+                                          navigateToPoint(p);
                                         }
                                       }}
                                       className={`p-3 rounded-xl border text-left transition-all ${isActive ? 'bg-tcm-clay border-tcm-clay text-white shadow-lg' : 'bg-white border-tcm-gold/10 text-tcm-ink hover:bg-tcm-paper'}`}
