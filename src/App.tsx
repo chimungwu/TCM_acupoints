@@ -39,7 +39,7 @@ const ELEMENT_COLORS: Record<string, string> = {
 type ViewType = 'encyclopedia' | 'principles' | 'rhymes' | 'calculation' | 'prescription' | 'author';
 
 export default function App() {
-  const [activeView, setActiveView] = useState<ViewType>('encyclopedia');
+  const [activeView, setActiveView] = useState<ViewType>('author');
   const [selectedPrinciple, setSelectedPrinciple] = useState<string | null>(null);
   const [selectedRhyme, setSelectedRhyme] = useState<Rhyme | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -112,11 +112,11 @@ export default function App() {
   const naJiaPoints = getNaJiaPoints(ganzhi.dayStem, ganzhi.hourBranch);
 
   const navItems = [
+    { id: 'author', label: '關於作者', icon: Info },
     { id: 'principles', label: '配穴原則', icon: GraduationCap },
     { id: 'rhymes', label: '穴位歌訣', icon: Sparkles },
     { id: 'calculation', label: '時辰配穴', icon: Calculator },
     { id: 'encyclopedia', label: '穴位百科', icon: BookOpen },
-    { id: 'author', label: '關於作者', icon: Info },
   ];
 
   return (
@@ -1204,8 +1204,6 @@ export default function App() {
                         <li>中國醫藥大學｜中西醫雙主修</li>
                         <li>中國醫藥大學｜針灸碩士</li>
                         <li>中國醫藥大學｜醫學博士</li>
-                        <li>中國醫藥大學｜講師</li>
-                        <li>台中科技大學｜助理教授</li>
                         <li>教育部核定｜助理教授</li>
                         <li>針灸醫學會｜專科醫師</li>
                         <li>肥胖研究學會｜專科醫師</li>
