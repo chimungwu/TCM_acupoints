@@ -6,7 +6,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, BookOpen, Plus, Trash2, Info, Wind, Droplets, Flame, Mountain, 
-  TreePine, ChevronRight, Filter, Clock, Layout, GraduationCap, Calculator,
+  TreePine, ChevronRight, ChevronLeft, Filter, Clock, Layout, GraduationCap, Calculator,
   Calendar, Zap, Heart, Shield, Activity, Sparkles
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -217,7 +217,7 @@ export default function App() {
                 className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full"
               >
                 {/* Left: List */}
-                <div className="lg:col-span-4 flex flex-col gap-4">
+                <div className={`lg:col-span-4 ${selectedPoint ? 'hidden lg:flex' : 'flex'} flex-col gap-4`}>
                   <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-sm overflow-hidden flex flex-col h-full">
                     <div className="p-4 border-b border-tcm-gold/5 bg-tcm-paper flex flex-col gap-4">
                       <div className="flex items-center justify-between">
@@ -271,7 +271,7 @@ export default function App() {
                 </div>
 
                 {/* Right: Details */}
-                <div className="lg:col-span-8">
+                <div className={`lg:col-span-8 ${selectedPoint ? 'block' : 'hidden lg:block'}`}>
                   <AnimatePresence mode="wait">
                     {selectedPoint ? (
                       <motion.div
@@ -283,21 +283,21 @@ export default function App() {
                       >
                         <div className="p-8 space-y-8">
                           <div className="flex justify-between items-start">
-                            <div>
-                              <div className="inline-flex items-center px-3 py-1 rounded-full bg-tcm-jade/10 text-tcm-jade text-[10px] font-bold tracking-widest uppercase mb-4">
-                                {selectedPoint.meridian}
+                            <div className="flex items-center gap-4">
+                              <button onClick={() => setSelectedPoint(null)} className="lg:hidden p-2 text-tcm-clay bg-tcm-paper rounded-full">
+                                <ChevronLeft size={20} />
+                              </button>
+                              <div>
+                                <div className="inline-flex items-center px-3 py-1 rounded-full bg-tcm-jade/10 text-tcm-jade text-[10px] font-bold tracking-widest uppercase mb-4">
+                                  {selectedPoint.meridian}
+                                </div>
+                                <h2 className="text-5xl font-serif font-bold text-tcm-ink mb-1">{selectedPoint.name}</h2>
+                                <p className="text-tcm-jade font-mono text-xl font-bold">{selectedPoint.code}</p>
                               </div>
-                              <h2 className="text-5xl font-serif font-bold text-tcm-ink mb-1">{selectedPoint.name}</h2>
-                              <p className="text-tcm-jade font-mono text-xl font-bold">{selectedPoint.code}</p>
                             </div>
-                            <button 
-                              onClick={() => addToPrescription(selectedPoint)}
-                              className="p-4 bg-tcm-clay text-white rounded-2xl hover:bg-tcm-ink transition-all shadow-lg shadow-tcm-clay/20 active:scale-95 flex items-center gap-2"
-                            >
-                              <Plus size={20} /> <span className="font-bold text-sm">加入配穴</span>
-                            </button>
                           </div>
-
+                        </div>
+                        
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-4">
                               <h3 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/10 pb-2">
@@ -370,7 +370,6 @@ export default function App() {
                               <div className="text-sm text-tcm-ink leading-relaxed bg-tcm-paper p-6 rounded-3xl border border-tcm-gold/20 font-medium">
                                 {selectedPoint.location}
                               </div>
-                            </div>
                           </div>
 
                           {selectedPoint.is_four_general && (
