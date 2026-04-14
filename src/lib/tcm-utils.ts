@@ -167,100 +167,104 @@ export const FIVE_SHU_INDICATIONS = [
 ];
 
 /**
- * Na Jia Fa (納甲法) Data - Based on the "Zi Wu Liu Zhu Ding Xue Ge"
- * Structure: DayStem -> HourBranch -> Points[]
+ * Na Jia Fa (納甲法) - New SOP Implementation
  */
-export const NA_JIA_FA_MAP: Record<string, Record<string, string[]>> = {
-  '甲': {
-    '戌': ['竅陰'],
-    '子': ['前谷'],
-    '寅': ['陷谷', '丘墟'], // 返本還原
-    '辰': ['陽溪'],
-    '午': ['委中'],
-    '申': ['液門'], // 日干重見納三焦
-  },
-  '乙': {
-    '酉': ['大敦'],
-    '亥': ['少府'],
-    '丑': ['太白', '太衝'],
-    '卯': ['經渠'],
-    '巳': ['陰谷'],
-    '未': ['勞宮'], // 日干重見納心包
-  },
-  '丙': {
-    '申': ['少澤'],
-    '戌': ['內庭'],
-    '子': ['三間', '腕骨'],
-    '寅': ['崑崙'],
-    '辰': ['陽陵泉'],
-    '午': ['中渚'],
-  },
-  '丁': {
-    '未': ['少衝'],
-    '酉': ['大都'],
-    '亥': ['太淵', '神門'],
-    '丑': ['復溜'],
-    '卯': ['曲泉'],
-    '巳': ['大陵'],
-  },
-  '戊': {
-    '午': ['厲兌'],
-    '申': ['前谷'], // Note: Song says 滎穴二間遷, but usually follows sequence. Using song: 二間
-    '戌': ['束骨', '衝陽'],
-    '子': ['陽輔'],
-    '寅': ['小海'],
-    '辰': ['支溝'],
-  },
-  '己': {
-    '巳': ['隱白'],
-    '未': ['魚際'],
-    '酉': ['太溪', '太白'],
-    '亥': ['中封'],
-    '丑': ['少海'],
-    '卯': ['間使'],
-  },
-  '庚': {
-    '辰': ['商陽'],
-    '午': ['通谷'],
-    '申': ['足臨泣', '合谷'],
-    '戌': ['陽谷'],
-    '子': ['足三里'],
-    '寅': ['天井'],
-  },
-  '辛': {
-    '卯': ['少商'],
-    '巳': ['然谷'],
-    '未': ['太衝', '太淵'],
-    '酉': ['靈道'],
-    '亥': ['陰陵泉'],
-    '丑': ['曲澤'],
-  },
-  '壬': {
-    '寅': ['至陰'],
-    '辰': ['俠溪'],
-    '午': ['後溪', '京骨'],
-    '申': ['解溪'],
-    '戌': ['曲池'],
-    '子': ['關衝'],
-  },
-  '癸': {
-    '亥': ['湧泉'],
-    '丑': ['行間'],
-    '卯': ['神門', '太溪'],
-    '巳': ['商丘'],
-    '未': ['尺澤'],
-    '酉': ['中衝'],
-  }
+export interface NaJiaResult {
+  primary: string | null;
+  alternative: string;
+  hourStem: string;
+  transformation: string;
+}
+
+const STEM_TO_MERIDIAN: Record<string, string> = {
+  '甲': '足少陽膽經',
+  '乙': '足厥陰肝經',
+  '丙': '手太陽小腸經',
+  '丁': '手少陰心經',
+  '戊': '足陽明胃經',
+  '己': '足太陰脾經',
+  '庚': '手陽明大腸經',
+  '辛': '手太陰肺經',
+  '壬': '足太陽膀胱經',
+  '癸': '足少陰腎經',
 };
 
-/**
- * Correcting some points in the map based on the song text provided by user
- */
-NA_JIA_FA_MAP['戊']['申'] = ['二間'];
-NA_JIA_FA_MAP['壬']['午'] = ['後溪', '京骨', '陽池']; // Song mentions 陽池 for Sanjiao寄
+const MERIDIAN_FIVE_SHU: Record<string, string[]> = {
+  '足少陽膽經': ['足竅陰', '俠溪', '足臨泣', '陽輔', '陽陵泉'],
+  '足厥陰肝經': ['大敦', '行間', '太衝', '中封', '曲泉'],
+  '手太陽小腸經': ['少澤', '前谷', '後溪', '陽谷', '小海'],
+  '手少陰心經': ['少衝', '少府', '神門', '靈道', '少海'],
+  '足陽明胃經': ['厲兌', '內庭', '陷谷', '解谿', '足三里'],
+  '足太陰脾經': ['隱白', '大都', '太白', '商丘', '陰陵泉'],
+  '手陽明大腸經': ['商陽', '二間', '三間', '陽溪', '曲池'],
+  '手太陰肺經': ['少商', '魚際', '太淵', '經渠', '尺澤'],
+  '足太陽膀胱經': ['至陰', '足通谷', '束骨', '昆崙', '委中'],
+  '足少陰腎經': ['湧泉', '然谷', '太溪', '復溜', '陰谷'],
+};
 
-export function getNaJiaPoints(dayStem: string, hourBranch: string): string[] {
-  return NA_JIA_FA_MAP[dayStem]?.[hourBranch] || [];
+const YANG_YUAN_POINTS: Record<string, string> = {
+  '足少陽膽經': '丘墟',
+  '手太陽小腸經': '腕骨',
+  '足陽明胃經': '衝陽',
+  '手陽明大腸經': '合谷',
+  '足太陽膀胱經': '京骨',
+};
+
+const TRANSFORMATION_MAP: Record<string, string> = {
+  '甲': '土', '己': '土',
+  '乙': '金', '庚': '金',
+  '丙': '水', '辛': '水',
+  '丁': '木', '壬': '木',
+  '戊': '火', '癸': '火',
+};
+
+export function calculateNaJia(dayStem: string, hourBranch: string): NaJiaResult {
+  const dayStemIdx = HEAVENLY_STEMS.indexOf(dayStem);
+  const hourBranchIdx = EARTHLY_BRANCHES.indexOf(hourBranch);
+  
+  // 1. Get Hour Stem (Wu Shu Dun)
+  // Formula: (Day_Stem_Idx % 5 * 2 + 2 + Hour_Branch_Idx) % 10
+  const hourStemIdx = (dayStemIdx % 5 * 2 + 2 + hourBranchIdx) % 10;
+  const hourStem = HEAVENLY_STEMS[hourStemIdx];
+  
+  // 2. Primary Open Check
+  let primary: string | null = null;
+  const isYangDay = ['甲', '丙', '戊', '庚', '壬'].includes(dayStem);
+  const isYangHour = ['甲', '丙', '戊', '庚', '壬'].includes(hourStem);
+  
+  // Traditional Na Jia Sequence Logic (Simplified to match SOP "符合序列")
+  if (isYangDay && isYangHour) {
+    const yangStems = ['甲', '丙', '戊', '庚', '壬'];
+    const stemPos = yangStems.indexOf(hourStem);
+    const meridian = STEM_TO_MERIDIAN[dayStem];
+    const shu = MERIDIAN_FIVE_SHU[meridian];
+    const yuan = YANG_YUAN_POINTS[meridian];
+    
+    // Sequence: 井(0), 滎(1), 輸(2), 原(yuan), 經(3), 合(4)
+    const sequence = [shu[0], shu[1], shu[2], yuan, shu[3], shu[4]];
+    primary = sequence[stemPos] || null;
+  } else if (!isYangDay && !isYangHour) {
+    const yinStems = ['乙', '丁', '己', '辛', '癸'];
+    const stemPos = yinStems.indexOf(hourStem);
+    const meridian = STEM_TO_MERIDIAN[dayStem];
+    const shu = MERIDIAN_FIVE_SHU[meridian];
+    
+    // Sequence: 井(0), 滎(1), 輸(2), 經(3), 合(4)
+    primary = shu[stemPos] || null;
+  }
+  
+  // 3. Alternative Gate (Five Gates Ten Transformations)
+  const altMeridian = STEM_TO_MERIDIAN[hourStem];
+  const pos = (hourBranchIdx % 5) + 1;
+  const altPoint = MERIDIAN_FIVE_SHU[altMeridian][pos - 1];
+  const transformation = TRANSFORMATION_MAP[hourStem];
+
+  return {
+    primary,
+    alternative: altPoint,
+    hourStem,
+    transformation
+  };
 }
 /**
  * Ling Gui Ba Fa (靈龜八法) - Accurate calculation based on provided base numbers
