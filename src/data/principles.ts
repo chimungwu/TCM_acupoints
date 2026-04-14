@@ -92,7 +92,7 @@ export const PRINCIPLES_DATA: Record<string, PrincipleDetail> = {
   '子母經配穴法': {
     title: '子母經配穴法',
     description: '根據「虛則補其母，實則瀉其子」的五行原則選穴。',
-    content: '參照十二經脈五行屬性，選取母經或子經的穴位。',
+    content: '參照十二經脈五行屬性，選取母經 or 子經的穴位。',
     mappings: [
       { label: '肺虛 (土生金)', points: ['太白 (脾經-母)', '太淵 (肺經-自)'], description: '虛則補其母。' },
       { label: '肝實 (木生火)', points: ['少府 (心經-子)', '行間 (肝經-自)'], description: '實則瀉其子。' },

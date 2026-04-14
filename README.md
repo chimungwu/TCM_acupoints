@@ -1,37 +1,51 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 針灸配穴導引系統 (Acupoint Combination Guide)
 
-# Run and deploy your AI Studio app
+![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey.svg)
 
-This contains everything you need to run your app locally.
+這是一個結合傳統中醫智慧與現代數據導引的針灸配穴工具，旨在為中醫學習者與從業者提供一個直覺、系統化的穴位探索與配穴邏輯參考平台。
 
-View your app in AI Studio: https://ai.studio/apps/af775547-8de3-406a-b238-e1f3f2144787
+## 🌟 核心理念：工具為引，經典為宗
 
-## Run Locally
+針灸之道，既是精準的經絡物理學，亦是深邃的人體能量學。本系統的開發初衷源於**吳啓銘中醫博士**多年的臨床體悟與教學經驗。
 
-**Prerequisites:**  Node.js
+> 「醫學的進步，不應是捨棄傳統，而是利用新時代的工具去更深刻地解讀傳統。數據與演算法可以輔助決策，但無法取代醫師指尖下的溫度。」 —— 吳啓銘 醫師
 
+## ✨ 主要功能
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+### 1. 系統化配穴介紹
+穴位如星辰，單點易識，但要將其組合成方，理解其間的「君臣佐使」與相互拮抗，往往需要長年的浸潤。本系統提供：
+- **結構化資訊：** 將深奧的配穴邏輯轉化為可檢索、可對照的數位化工具。
+- **臨床經驗整合：** 參考吳醫師長達十年的跟診歲月與學術研究，提供精準的配穴建議。
 
-## Deploy To GitHub Pages
+### 2. 穴位深度探索
+- **多維度標籤：** 包含五輸穴、五行屬性、原穴、絡穴、郄穴、募穴、背俞穴等關鍵臨床標籤。
+- **即時時辰對照：** 結合子午流注理論，根據當前時辰自動提示對應經絡。
+- **視覺化呈現：** 清晰的穴位位置說明與特性描述。
 
-1. Push this repository to GitHub.
-2. In GitHub repo settings, open `Pages`.
-3. Set `Build and deployment` source to `GitHub Actions`.
-4. Push to `main`, then wait for workflow `Deploy To GitHub Pages` to finish.
-5. Open your Pages URL.
+### 3. 經典歌訣傳承
+- **穴位歌訣頁面：** 收錄四總穴歌、馬丹陽天星十二穴歌、標幽賦等經典文獻。
+- **數位化呈現：** 將傳統歌訣以清晰、易讀的方式呈現，輔助記憶與教學。
 
-Notes:
-- This project is a Vite app. Do not deploy raw source files directly.
-- The site must serve the build output from `dist/`.
+### 4. 經典理論傳承
+- **配穴原則教學：** 涵蓋子午流注、五行生剋等核心配穴邏輯。
 
-## License
+## 👨‍⚕️ 關於作者：吳啓銘 中醫博士
 
-This project is licensed under the Creative Commons Attribution 4.0 International License (CC BY 4.0).  
-See [LICENSE](./LICENSE) for details.
+**吳啓銘 醫師**現任臻品中醫副院長，中國醫藥大學 中西醫雙主修、針灸碩士、醫學博士。
+
+- **學術背景：** 中國醫藥大學講師、台中科技大學助理教授。
+- **臨床傳承：** 師承國寶級中醫師鍾永祥老師，致力於將傳統針灸感應與現代數據分析相結合。
+- **開發動機：** 希望透過此工具拋磚引玉，為研讀針法的同道提供一個輔助思考的平台，讓配穴不再是難以跨越的屏障。
+
+## 📜 授權條款
+
+本專案內容採用 **[創用 CC 姓名標示 4.0 國際 授權條款 (CC BY 4.0)](https://creativecommons.org/licenses/by/4.0/deed.zh_TW)** 進行授權。
+
+您可以自由地：
+- **共享** — 在任何媒介以任何形式複製、發行本素材。
+- **修改** — 釋出、改作、重混、轉換本素材，主要用於任何目的，甚至商業目的。
+
+只要您遵守姓名標示的條款，授權人不能撤回這些自由。
+
+---
+© 2024 吳啓銘 中醫博士. All rights reserved.

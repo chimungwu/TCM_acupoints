@@ -18,6 +18,7 @@ import {
   getNaJiaPoints
 } from './lib/tcm-utils';
 import { PRINCIPLES_DATA, PrincipleDetail } from './data/principles';
+import { RHYMES_DATA, Rhyme } from './data/rhymes';
 
 const ELEMENT_ICONS: Record<string, any> = {
   '木': TreePine,
@@ -35,11 +36,12 @@ const ELEMENT_COLORS: Record<string, string> = {
   '水': 'text-blue-600 bg-blue-50',
 };
 
-type ViewType = 'encyclopedia' | 'principles' | 'calculation' | 'prescription' | 'author';
+type ViewType = 'encyclopedia' | 'principles' | 'rhymes' | 'calculation' | 'prescription' | 'author';
 
 export default function App() {
   const [activeView, setActiveView] = useState<ViewType>('encyclopedia');
   const [selectedPrinciple, setSelectedPrinciple] = useState<string | null>(null);
+  const [selectedRhyme, setSelectedRhyme] = useState<Rhyme | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedPoint, setSelectedPoint] = useState<Acupoint | null>(null);
   const [prescription, setPrescription] = useState<Acupoint[]>([]);
@@ -47,6 +49,12 @@ export default function App() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isManualTime, setIsManualTime] = useState(false);
   const [manualTimeStr, setManualTimeStr] = useState(new Date().toISOString().slice(0, 16));
+
+  // Reset sub-views when active view changes
+  useEffect(() => {
+    setSelectedPrinciple(null);
+    setSelectedRhyme(null);
+  }, [activeView]);
 
   // Update time every minute
   useEffect(() => {
@@ -98,39 +106,40 @@ export default function App() {
   const naJiaPoints = getNaJiaPoints(ganzhi.dayStem, ganzhi.hourBranch);
 
   const navItems = [
-    { id: 'encyclopedia', label: '穴位百科', icon: BookOpen },
     { id: 'principles', label: '配穴原則', icon: GraduationCap },
+    { id: 'rhymes', label: '穴位歌訣', icon: Sparkles },
     { id: 'calculation', label: '時辰配穴', icon: Calculator },
+    { id: 'encyclopedia', label: '穴位百科', icon: BookOpen },
     { id: 'author', label: '關於作者', icon: Info },
   ];
 
   return (
     <div className="min-h-screen bg-tcm-paper text-tcm-ink font-sans selection:bg-tcm-gold/20 flex">
       {/* Sidebar Navigation */}
-      <aside className="w-20 md:w-64 bg-white border-r border-tcm-gold/10 flex flex-col sticky top-0 h-screen z-40">
-        <div className="p-6 flex items-center gap-3">
+      <aside className="w-20 md:w-64 bg-white border-r border-tcm-gold/20 flex flex-col sticky top-0 h-screen z-40">
+        <div className="p-6 flex items-center gap-3 border-b border-tcm-gold/5">
           <div className="w-10 h-10 bg-tcm-jade rounded-2xl flex items-center justify-center text-white shadow-lg shadow-tcm-jade/20 shrink-0">
             <Activity size={24} />
           </div>
           <div className="hidden md:block overflow-hidden">
             <h1 className="text-lg font-serif font-bold tracking-tight whitespace-nowrap text-tcm-ink">靈樞流注精要</h1>
-            <p className="text-[10px] text-tcm-clay font-medium uppercase tracking-widest">阿銘醫師針灸配穴筆記</p>
+            <p className="text-[10px] text-tcm-clay font-bold uppercase tracking-widest">阿銘醫師針灸配穴筆記</p>
           </div>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-2">
+        <nav className="flex-1 px-3 py-6 space-y-2">
           {navItems.map((item) => (
             <button
               key={item.id}
               onClick={() => setActiveView(item.id as ViewType)}
               className={`w-full flex items-center gap-3 p-3 rounded-2xl transition-all group ${
                 activeView === item.id 
-                  ? 'bg-tcm-paper text-tcm-clay shadow-sm border border-tcm-gold/20' 
-                  : 'text-tcm-clay/40 hover:bg-tcm-paper hover:text-tcm-clay'
+                  ? 'bg-tcm-paper text-tcm-ink shadow-sm border border-tcm-gold/30' 
+                  : 'text-tcm-clay/60 hover:bg-tcm-paper hover:text-tcm-ink'
               }`}
             >
               <item.icon size={20} className={activeView === item.id ? 'text-tcm-jade' : 'group-hover:text-tcm-jade'} />
-              <span className="hidden md:block font-medium text-sm">{item.label}</span>
+              <span className="hidden md:block font-bold text-sm">{item.label}</span>
             </button>
           ))}
         </nav>
@@ -143,7 +152,7 @@ export default function App() {
               </div>
               <button 
                 onClick={() => setIsManualTime(!isManualTime)}
-                className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${isManualTime ? 'bg-tcm-jade text-white' : 'bg-tcm-gold/10 text-tcm-clay'}`}
+                className={`text-[10px] font-bold px-2 py-0.5 rounded transition-colors ${isManualTime ? 'bg-tcm-jade text-white' : 'bg-tcm-gold/20 text-tcm-clay'}`}
               >
                 {isManualTime ? '手動' : '同步'}
               </button>
@@ -168,11 +177,28 @@ export default function App() {
                 <div className="text-center">
                   {effectiveTime.getFullYear()}年 {effectiveTime.getMonth() + 1}月 {effectiveTime.getDate()}日 {effectiveTime.getHours()}時 {effectiveTime.getMinutes().toString().padStart(2, '0')}分
                 </div>
-                <div className="text-center text-tcm-jade">
+                <div className="text-center text-tcm-jade font-bold">
                   {currentShichen}時：{zwlzMeridian.replace('手', '').replace('足', '')}
                 </div>
               </div>
             </div>
+          </div>
+
+          <div className="mt-4 px-2">
+            <a 
+              href="https://creativecommons.org/licenses/by/4.0/deed.zh_TW" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex flex-col items-center gap-1 opacity-40 hover:opacity-100 transition-opacity"
+            >
+              <img 
+                src="https://mirrors.creativecommons.org/presskit/buttons/88x31/svg/by.svg" 
+                alt="CC BY 4.0" 
+                className="h-5"
+                referrerPolicy="no-referrer"
+              />
+              <span className="text-[8px] text-tcm-clay font-bold uppercase tracking-widest">CC BY 4.0</span>
+            </a>
           </div>
         </div>
       </aside>
@@ -199,7 +225,7 @@ export default function App() {
                           <Filter size={16} className="text-tcm-gold" /> 穴位瀏覽
                         </h2>
                         <select 
-                          className="text-xs bg-white border border-tcm-gold/20 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-tcm-gold"
+                          className="text-xs bg-white border border-tcm-gold/40 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-tcm-jade font-bold"
                           value={filterMeridian}
                           onChange={(e) => setFilterMeridian(e.target.value)}
                         >
@@ -213,7 +239,7 @@ export default function App() {
                         <input
                           type="text"
                           placeholder="搜尋穴位名稱、代碼..."
-                          className="w-full pl-9 pr-4 py-2 bg-white border border-tcm-gold/10 rounded-xl text-xs focus:outline-none focus:ring-1 focus:ring-tcm-gold/20 transition-all"
+                          className="w-full pl-9 pr-4 py-2 bg-white border border-tcm-gold/30 rounded-xl text-xs font-medium focus:outline-none focus:ring-1 focus:ring-tcm-jade transition-all"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -232,8 +258,8 @@ export default function App() {
                                 {point.code}
                               </div>
                               <div>
-                                <div className="font-bold text-tcm-ink">{point.name}</div>
-                                <div className="text-[10px] text-tcm-clay/60 uppercase tracking-tighter">{point.meridian}</div>
+                                <div className="font-bold text-tcm-ink text-sm">{point.name}</div>
+                                <div className="text-[10px] text-tcm-jade font-bold uppercase tracking-tighter">{point.meridian}</div>
                               </div>
                             </div>
                             <ChevronRight size={14} className={`text-tcm-gold/20 group-hover:text-tcm-gold transition-transform ${selectedPoint?.id === point.id ? 'translate-x-1 text-tcm-gold' : ''}`} />
@@ -262,7 +288,7 @@ export default function App() {
                                 {selectedPoint.meridian}
                               </div>
                               <h2 className="text-5xl font-serif font-bold text-tcm-ink mb-1">{selectedPoint.name}</h2>
-                              <p className="text-tcm-clay font-mono text-xl">{selectedPoint.code}</p>
+                              <p className="text-tcm-jade font-mono text-xl font-bold">{selectedPoint.code}</p>
                             </div>
                             <button 
                               onClick={() => addToPrescription(selectedPoint)}
@@ -272,43 +298,68 @@ export default function App() {
                             </button>
                           </div>
 
-                          <div className="flex flex-wrap gap-2">
-                            {selectedPoint.element && (
-                              <div className={`flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold ${ELEMENT_COLORS[selectedPoint.element]}`}>
-                                {(() => {
-                                  const Icon = ELEMENT_ICONS[selectedPoint.element];
-                                  return Icon ? <Icon size={14} /> : null;
-                                })()}
-                                五行：{selectedPoint.element}
-                              </div>
-                            )}
-                            {selectedPoint.five_shu && (
-                              <div className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold">
-                                五輸穴：{selectedPoint.five_shu}
-                              </div>
-                            )}
-                            {selectedPoint.is_yuan && <div className="px-4 py-2 rounded-xl bg-orange-100 text-orange-700 text-xs font-bold">原穴</div>}
-                            {selectedPoint.is_luo && <div className="px-4 py-2 rounded-xl bg-purple-100 text-purple-700 text-xs font-bold">絡穴</div>}
-                            {selectedPoint.is_xi && <div className="px-4 py-2 rounded-xl bg-red-100 text-red-700 text-xs font-bold">郄穴</div>}
-                            {selectedPoint.is_mu && <div className="px-4 py-2 rounded-xl bg-indigo-100 text-indigo-700 text-xs font-bold">募穴</div>}
-                            {selectedPoint.is_back_shu && <div className="px-4 py-2 rounded-xl bg-blue-100 text-blue-700 text-xs font-bold">背俞穴</div>}
-                            {selectedPoint.is_eight_confluence && (
-                              <div className="px-4 py-2 rounded-xl bg-cyan-100 text-cyan-700 text-xs font-bold">
-                                八脈交會：{selectedPoint.is_eight_confluence}
-                              </div>
-                            )}
-                          </div>
-
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="space-y-4">
                               <h3 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/10 pb-2">
                                 <Info size={16} className="text-tcm-gold" /> 穴位特性
                               </h3>
-                              <div className="text-sm text-tcm-clay/70 leading-relaxed bg-tcm-paper p-6 rounded-3xl italic relative overflow-hidden border border-tcm-gold/10">
+                              
+                              <div className="text-sm text-tcm-ink leading-relaxed bg-tcm-paper p-6 rounded-3xl italic relative overflow-hidden border border-tcm-gold/20">
                                 <div className="absolute top-0 right-0 p-4 opacity-5">
                                   <BookOpen size={64} />
                                 </div>
-                                {selectedPoint.characteristics || "暫無資料，待補充。"}
+                                
+                                <div className="flex flex-wrap gap-2 mb-4 relative z-10">
+                                  {selectedPoint.element && (
+                                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold ${ELEMENT_COLORS[selectedPoint.element]}`}>
+                                      {(() => {
+                                        const Icon = ELEMENT_ICONS[selectedPoint.element];
+                                        return Icon ? <Icon size={12} /> : null;
+                                      })()}
+                                      五行：{selectedPoint.element}
+                                    </div>
+                                  )}
+                                  {selectedPoint.five_shu && (
+                                    <div className="px-3 py-1.5 rounded-xl bg-white text-slate-900 text-[10px] font-bold border border-slate-300">
+                                      五輸穴：{selectedPoint.five_shu}
+                                    </div>
+                                  )}
+                                  {selectedPoint.is_yuan && <div className="px-3 py-1.5 rounded-xl bg-orange-100 text-orange-900 text-[10px] font-bold border border-orange-300">原穴</div>}
+                                  {selectedPoint.is_luo && <div className="px-3 py-1.5 rounded-xl bg-purple-100 text-purple-900 text-[10px] font-bold border border-purple-300">絡穴</div>}
+                                  {selectedPoint.is_xi && <div className="px-3 py-1.5 rounded-xl bg-red-100 text-red-900 text-[10px] font-bold border border-red-300">郄穴</div>}
+                                  {selectedPoint.is_mu && <div className="px-3 py-1.5 rounded-xl bg-indigo-100 text-indigo-900 text-[10px] font-bold border border-indigo-300">募穴</div>}
+                                  {selectedPoint.is_back_shu && <div className="px-3 py-1.5 rounded-xl bg-blue-100 text-blue-900 text-[10px] font-bold border border-blue-300">背俞穴</div>}
+                                  {selectedPoint.is_eight_confluence && (
+                                    <div className="px-3 py-1.5 rounded-xl bg-cyan-100 text-cyan-900 text-[10px] font-bold border border-cyan-300">
+                                      八脈交會：{selectedPoint.is_eight_confluence}
+                                    </div>
+                                  )}
+                                  {selectedPoint.is_eight_influential && (
+                                    <div className="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 text-[10px] font-bold border border-emerald-300">
+                                      八會穴：{selectedPoint.is_eight_influential}
+                                    </div>
+                                  )}
+                                  {selectedPoint.is_crossing && (
+                                    <div className="px-3 py-1.5 rounded-xl bg-amber-100 text-amber-900 text-[10px] font-bold border border-amber-300">
+                                      交會穴：{selectedPoint.is_crossing}
+                                    </div>
+                                  )}
+                                </div>
+
+                                <div className="relative z-10 font-medium">
+                                  {selectedPoint.characteristics || (
+                                    !(selectedPoint.element || 
+                                      selectedPoint.five_shu || 
+                                      selectedPoint.is_yuan || 
+                                      selectedPoint.is_luo || 
+                                      selectedPoint.is_xi || 
+                                      selectedPoint.is_mu || 
+                                      selectedPoint.is_back_shu || 
+                                      selectedPoint.is_eight_confluence || 
+                                      selectedPoint.is_eight_influential || 
+                                      selectedPoint.is_crossing) && "暫無資料，待補充。"
+                                  )}
+                                </div>
                               </div>
                             </div>
 
@@ -316,8 +367,8 @@ export default function App() {
                               <h3 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/10 pb-2">
                                 <Wind size={16} className="text-tcm-gold" /> 穴道位置
                               </h3>
-                              <div className="text-sm text-tcm-clay/70 leading-relaxed bg-tcm-paper p-6 rounded-3xl border border-tcm-gold/10">
-                                {selectedPoint.location || "暫無資料，待補充。"}
+                              <div className="text-sm text-tcm-ink leading-relaxed bg-tcm-paper p-6 rounded-3xl border border-tcm-gold/20 font-medium">
+                                {selectedPoint.location}
                               </div>
                             </div>
                           </div>
@@ -368,7 +419,7 @@ export default function App() {
                     >
                       <div className="max-w-3xl">
                         <h2 className="text-4xl font-serif font-bold text-tcm-ink mb-4">配穴原則教學</h2>
-                        <p className="text-tcm-clay leading-relaxed">
+                        <p className="text-tcm-ink font-medium leading-relaxed">
                           配穴法是中醫針灸治療的核心，通過不同穴位的組合，可以產生協同作用，增強療效。
                           點擊下方卡片深入學習具體的配穴規律。
                         </p>
@@ -388,7 +439,7 @@ export default function App() {
                               <GraduationCap size={28} />
                             </div>
                             <h3 className="font-serif font-bold text-2xl text-tcm-ink mb-3">{p.title}</h3>
-                            <p className="text-sm text-tcm-clay/60 leading-relaxed line-clamp-2">{p.description}</p>
+                            <p className="text-sm text-tcm-ink/70 font-medium leading-relaxed line-clamp-2">{p.description}</p>
                             <div className="mt-6 flex items-center gap-2 text-tcm-gold font-bold text-xs uppercase tracking-widest">
                               進入教學 <ChevronRight size={14} />
                             </div>
@@ -415,7 +466,7 @@ export default function App() {
                         <div className="p-10 md:p-16 space-y-12">
                           <div className="max-w-3xl space-y-4">
                             <h2 className="text-5xl font-serif font-bold text-tcm-ink">{PRINCIPLES_DATA[selectedPrinciple].title}</h2>
-                            <p className="text-xl text-tcm-clay/60 leading-relaxed italic">
+                            <p className="text-xl text-tcm-jade font-serif font-bold leading-relaxed italic">
                               {PRINCIPLES_DATA[selectedPrinciple].content}
                             </p>
                           </div>
@@ -435,7 +486,7 @@ export default function App() {
                                   className="bg-tcm-paper/30 rounded-3xl p-6 border border-tcm-gold/10 hover:bg-white hover:shadow-lg transition-all group"
                                 >
                                   <div className="flex items-center justify-between mb-4">
-                                    <span className="text-xs font-bold text-tcm-clay bg-tcm-paper px-3 py-1 rounded-full uppercase tracking-wider">
+                                    <span className="text-xs font-bold text-tcm-jade bg-white px-3 py-1 rounded-full uppercase tracking-wider border border-tcm-jade/10">
                                       {m.label}
                                     </span>
                                     <div className="w-8 h-8 rounded-full bg-white flex items-center justify-center text-tcm-gold/40 group-hover:text-tcm-gold transition-colors">
@@ -468,6 +519,105 @@ export default function App() {
                               ))}
                             </div>
                           </div>
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </motion.div>
+            )}
+
+            {activeView === 'rhymes' && (
+              <motion.div
+                key="rhymes"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 1.05 }}
+                className="space-y-8"
+              >
+                <AnimatePresence mode="wait">
+                  {!selectedRhyme ? (
+                    <motion.div
+                      key="rhyme-list"
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
+                      className="space-y-8"
+                    >
+                      <div className="max-w-3xl">
+                        <h2 className="text-4xl font-serif font-bold text-tcm-ink mb-4">經典穴位歌訣</h2>
+                        <p className="text-tcm-ink font-medium leading-relaxed">
+                          歌訣是中醫傳承智慧的重要載體，將深奧的取穴與配穴規律化為朗朗上口的文字，便於記憶與臨床應用。
+                        </p>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {RHYMES_DATA.map((rhyme, i) => (
+                          <motion.button
+                            key={rhyme.id}
+                            onClick={() => setSelectedRhyme(rhyme)}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: i * 0.1 }}
+                            className="bg-white p-8 rounded-3xl border border-tcm-gold/20 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all text-left group flex flex-col h-full"
+                          >
+                            <div className="w-14 h-14 bg-tcm-paper text-tcm-jade rounded-2xl flex items-center justify-center mb-6 group-hover:bg-tcm-jade group-hover:text-white transition-colors">
+                              <Sparkles size={28} />
+                            </div>
+                            <h3 className="font-serif font-bold text-2xl text-tcm-ink mb-3">{rhyme.title}</h3>
+                            <p className="text-sm text-tcm-ink/70 font-medium leading-relaxed line-clamp-3 mb-6 flex-1">{rhyme.description}</p>
+                            <div className="flex items-center gap-2 text-tcm-gold font-bold text-xs uppercase tracking-widest">
+                              閱讀歌訣 <ChevronRight size={14} />
+                            </div>
+                          </motion.button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="rhyme-detail"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="space-y-8"
+                    >
+                      <button 
+                        onClick={() => setSelectedRhyme(null)}
+                        className="flex items-center gap-2 text-tcm-clay hover:text-tcm-ink transition-colors font-bold text-sm"
+                      >
+                        <ChevronRight size={16} className="rotate-180" /> 返回歌訣列表
+                      </button>
+
+                      <div className="bg-white rounded-[3rem] border border-tcm-gold/20 shadow-2xl overflow-hidden">
+                        <div className="p-10 md:p-16 space-y-12">
+                          <div className="max-w-3xl space-y-4">
+                            <h2 className="text-5xl font-serif font-bold text-tcm-ink">{selectedRhyme.title}</h2>
+                            <p className="text-xl text-tcm-jade font-serif font-bold leading-relaxed italic">
+                              {selectedRhyme.description}
+                            </p>
+                          </div>
+
+                          <div className="bg-tcm-paper p-12 rounded-[2.5rem] border border-tcm-gold/10 relative overflow-hidden">
+                            <div className="absolute top-0 right-0 p-12 opacity-5 pointer-events-none">
+                              <Sparkles size={200} />
+                            </div>
+                            
+                            <div className="relative z-10 flex flex-col items-center text-center space-y-6">
+                              {selectedRhyme.content.map((line, idx) => (
+                                <p key={idx} className="text-3xl md:text-4xl font-serif font-bold text-tcm-ink tracking-widest">
+                                  {line}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
+
+                          {selectedRhyme.source && (
+                            <div className="flex justify-end">
+                              <div className="px-6 py-3 bg-tcm-paper rounded-2xl text-tcm-clay text-sm font-bold border border-tcm-gold/10">
+                                出處：{selectedRhyme.source}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -635,17 +785,17 @@ export default function App() {
                         </div>
 
                         {/* Method 5: Na Jia Fa */}
-                        <div className="p-6 bg-tcm-ink rounded-3xl text-white space-y-4 shadow-xl">
+                        <div className="p-6 bg-tcm-paper rounded-3xl border border-tcm-gold/20 space-y-4 shadow-sm">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <Sparkles size={18} className="text-tcm-gold" />
-                              <h4 className="text-lg font-serif font-bold">子午流注 (納甲法)</h4>
+                              <Sparkles size={18} className="text-tcm-jade" />
+                              <h4 className="text-lg font-serif font-bold text-tcm-ink">子午流注 (納甲法)</h4>
                             </div>
-                            <span className="text-[10px] font-bold bg-white/10 px-2 py-0.5 rounded uppercase tracking-widest text-tcm-gold">按時開穴</span>
+                            <span className="text-[10px] font-bold bg-tcm-jade text-white px-2 py-0.5 rounded uppercase tracking-widest">按時開穴</span>
                           </div>
                           
                           <div className="space-y-3">
-                            <div className="text-xs text-white/60">
+                            <div className="text-xs text-tcm-clay font-bold">
                               根據《逐日按時定穴歌》，{ganzhi.dayStem}日 {ganzhi.hourBranch}時 開穴：
                             </div>
                             <div className="flex flex-wrap gap-2">
@@ -660,21 +810,21 @@ export default function App() {
                                         setActiveView('encyclopedia');
                                       }
                                     }}
-                                    className="px-4 py-2 bg-white/10 border border-white/10 rounded-xl text-sm font-bold text-white hover:bg-tcm-gold hover:text-tcm-ink transition-all"
+                                    className="px-4 py-2 bg-white border border-tcm-gold/30 rounded-xl text-sm font-bold text-tcm-ink hover:bg-tcm-jade hover:text-white transition-all shadow-sm"
                                   >
                                     {pName}
                                   </button>
                                 ))
                               ) : (
-                                <div className="text-xs italic text-white/40 py-2">
+                                <div className="text-xs italic text-tcm-clay/60 py-2 font-medium">
                                   當前時辰為閉時，無穴可開。
                                   <br/>
-                                  <span className="text-[10px] opacity-50">(陽日陽時開，陰日陰時開)</span>
+                                  <span className="text-[10px] opacity-70">(陽日陽時開，陰日陰時開)</span>
                                 </div>
                               )}
                             </div>
                           </div>
-                          <p className="text-[10px] text-white/40 leading-tight italic">
+                          <p className="text-[10px] text-tcm-clay/60 leading-tight italic font-medium">
                             納甲法結合十二經流注與五輸穴相生順序。陽日陽時開陽經，陰日陰時開陰經。
                           </p>
                         </div>
@@ -700,7 +850,6 @@ export default function App() {
                           <div className="flex items-center gap-6">
                             <div className="w-20 h-20 bg-tcm-clay text-white rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-tcm-clay/20">
                               <span className="text-3xl font-serif font-bold">{LING_GUI_POINTS[lingGuiNum].hexagram}</span>
-                              <span className="text-[10px] font-bold tracking-tighter">卦象</span>
                             </div>
                             <div className="space-y-1">
                               <div className="text-sm text-tcm-clay/60">當前開穴：</div>
@@ -893,7 +1042,7 @@ export default function App() {
                     </div>
                     <div>
                       <h1 className="text-4xl font-serif font-bold text-tcm-ink mb-2">吳啓銘 中醫博士</h1>
-                      <p className="text-tcm-clay text-lg mb-8">臻品中醫 副院長</p>
+                      <p className="text-tcm-jade text-lg font-bold mb-8">臻品中醫 副院長</p>
                     </div>
                   </div>
                   
@@ -903,8 +1052,8 @@ export default function App() {
                         <GraduationCap className="text-tcm-gold" /> 吳啓銘醫師 學經歷
                       </h3>
                       <ul className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
-                        <li>中國醫藥大學｜醫學學士</li>
-                        <li>中國醫藥大學｜醫學碩士</li>
+                        <li>中國醫藥大學｜中西醫雙主修</li>
+                        <li>中國醫藥大學｜針灸碩士</li>
                         <li>中國醫藥大學｜醫學博士</li>
                         <li>中國醫藥大學｜講師</li>
                         <li>台中科技大學｜助理教授</li>
@@ -941,27 +1090,21 @@ export default function App() {
                       <p>這個網站是我個人學習路上的紀錄與分享。願它能成為各位在針灸探索路上的一盞微光，輔助思考、引發討論，讓我們在追求精準醫療的同時，依然能保有一顆對古老智慧敬畏的心。</p>
                     </section>
 
-                    <section className="bg-tcm-paper rounded-2xl p-6 border border-tcm-gold/10">
-                      <h3 className="text-xl font-bold text-tcm-ink mb-3">授權資訊</h3>
-                      <p className="text-sm mb-3">
-                        本專案採用 <strong>Creative Commons Attribution 4.0 International (CC BY 4.0)</strong> 授權。
-                      </p>
-                      <ul className="list-disc pl-5 space-y-1 text-sm">
-                        <li>你可以分享、重製、改作，包含商業用途。</li>
-                        <li>使用時請標註作者與來源，並附上授權連結。</li>
-                        <li>若有修改內容，請清楚註明已修改。</li>
-                      </ul>
-                      <p className="text-sm mt-3">
-                        授權條款：
-                        <a
-                          href="https://creativecommons.org/licenses/by/4.0/"
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-tcm-jade font-semibold hover:underline ml-1"
-                        >
-                          https://creativecommons.org/licenses/by/4.0/
-                        </a>
-                      </p>
+                    <section className="pt-8 border-t border-tcm-gold/10 mt-8">
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-tcm-clay/60">
+                        <p>© 2024 吳啓銘 中醫博士. All rights reserved.</p>
+                        <div className="flex items-center gap-2">
+                          <span>本站內容採用</span>
+                          <a 
+                            href="https://creativecommons.org/licenses/by/4.0/deed.zh_TW" 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                            className="flex items-center gap-1 text-tcm-gold hover:underline font-bold"
+                          >
+                            創用 CC 姓名標示 4.0 國際 授權條款 (CC BY 4.0)
+                          </a>
+                        </div>
+                      </div>
                     </section>
                   </div>
                 </div>
