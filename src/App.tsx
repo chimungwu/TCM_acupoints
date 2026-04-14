@@ -7,7 +7,7 @@ import { useState, useMemo, useEffect } from 'react';
 import { 
   Search, BookOpen, Plus, Trash2, Info, Wind, Droplets, Flame, Mountain, 
   TreePine, ChevronRight, ChevronLeft, Filter, Clock, Layout, GraduationCap, Calculator,
-  Calendar, Zap, Heart, Shield, Activity, Sparkles
+  Calendar, Zap, Heart, Shield, Activity, Sparkles, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ACUPOINTS, Acupoint } from './data/acupoints';
@@ -43,6 +43,8 @@ export default function App() {
   const [selectedPrinciple, setSelectedPrinciple] = useState<string | null>(null);
   const [selectedRhyme, setSelectedRhyme] = useState<Rhyme | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+  const [displaySearchTerm, setDisplaySearchTerm] = useState('');
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [selectedPoint, setSelectedPoint] = useState<Acupoint | null>(null);
   const [prescription, setPrescription] = useState<Acupoint[]>([]);
   const [filterMeridian, setFilterMeridian] = useState<string>('all');
@@ -74,11 +76,15 @@ export default function App() {
 
   const filteredPoints = useMemo(() => {
     return ACUPOINTS.filter(p => {
-      const matchesSearch = p.name.includes(searchTerm) || p.code.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = displaySearchTerm === '' || 
+                            p.name.includes(displaySearchTerm) || 
+                            p.code.toLowerCase().includes(displaySearchTerm.toLowerCase()) || 
+                            p.meridian.toLowerCase().includes(displaySearchTerm.toLowerCase());
       const matchesFilter = filterMeridian === 'all' || p.meridian === filterMeridian;
-      return matchesSearch && matchesFilter;
+      // If there's a search term, ignore the meridian filter
+      return matchesSearch && (displaySearchTerm !== '' || matchesFilter);
     });
-  }, [searchTerm, filterMeridian]);
+  }, [displaySearchTerm, filterMeridian]);
 
   const addToPrescription = (point: Acupoint) => {
     if (!prescription.find(p => p.id === point.id)) {
@@ -214,61 +220,223 @@ export default function App() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -10 }}
-                className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full"
+                className="flex flex-col gap-6 h-full"
               >
-                {/* Left: List */}
-                <div className={`lg:col-span-4 ${selectedPoint ? 'hidden lg:flex' : 'flex'} flex-col gap-4`}>
-                  <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-sm overflow-hidden flex flex-col h-full">
-                    <div className="p-4 border-b border-tcm-gold/5 bg-tcm-paper flex flex-col gap-4">
-                      <div className="flex items-center justify-between">
-                        <h2 className="font-serif font-bold text-tcm-ink flex items-center gap-2">
-                          <Filter size={16} className="text-tcm-gold" /> 穴位瀏覽
-                        </h2>
-                        <select 
-                          className="text-xs bg-white border border-tcm-gold/40 rounded-md px-2 py-1 focus:outline-none focus:ring-1 focus:ring-tcm-jade font-bold"
-                          value={filterMeridian}
-                          onChange={(e) => setFilterMeridian(e.target.value)}
-                        >
-                          {meridians.map(m => (
-                            <option key={m} value={m}>{m === 'all' ? '全部經絡' : m}</option>
-                          ))}
-                        </select>
-                      </div>
-                      <div className="relative">
+                {/* Top: Search and Filter */}
+                <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-sm p-6 flex flex-col gap-4">
+                  <div className="flex items-center gap-4">
+                    <h2 className="font-serif font-bold text-tcm-ink flex items-center gap-2 shrink-0">
+                      <Filter size={16} className="text-tcm-gold" /> 穴位瀏覽
+                    </h2>
+                    {/* Desktop Search */}
+                    <div className="hidden md:flex relative flex-1 flex-col md:flex-row gap-2 w-full">
+                      <div className="relative flex-1">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-tcm-gold" size={16} />
                         <input
                           type="text"
                           placeholder="搜尋穴位名稱、代碼..."
-                          className="w-full pl-9 pr-4 py-2 bg-white border border-tcm-gold/30 rounded-xl text-xs font-medium focus:outline-none focus:ring-1 focus:ring-tcm-jade transition-all"
+                          className="w-full pl-9 pr-4 py-2 bg-tcm-paper border border-tcm-gold/30 rounded-xl text-xs font-medium focus:outline-none focus:ring-1 focus:ring-tcm-jade transition-all"
                           value={searchTerm}
                           onChange={(e) => setSearchTerm(e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              setDisplaySearchTerm(searchTerm);
+                              setIsSearchModalOpen(true);
+                            }
+                          }}
                         />
                       </div>
+                      <button
+                        onClick={() => {
+                          setDisplaySearchTerm(searchTerm);
+                          setIsSearchModalOpen(true);
+                        }}
+                        className="px-4 py-2 bg-tcm-jade text-white rounded-xl text-xs font-bold hover:bg-tcm-jade/90 transition-colors w-full md:w-auto"
+                      >
+                        搜尋
+                      </button>
                     </div>
-                    <div className="flex-1 overflow-y-auto custom-scrollbar">
-                      <div className="divide-y divide-tcm-gold/5">
-                        {filteredPoints.map((point) => (
-                          <button
-                            key={point.id}
-                            onClick={() => setSelectedPoint(point)}
-                            className={`w-full text-left p-4 hover:bg-tcm-paper transition-colors flex items-center justify-between group ${selectedPoint?.id === point.id ? 'bg-tcm-paper' : ''}`}
-                          >
-                            <div className="flex items-center gap-3">
-                              <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${selectedPoint?.id === point.id ? 'bg-tcm-clay text-white shadow-lg shadow-tcm-clay/20' : 'bg-tcm-gold/10 text-tcm-clay'}`}>
-                                {point.code}
-                              </div>
-                              <div>
-                                <div className="font-bold text-tcm-ink text-sm">{point.name}</div>
-                                <div className="text-[10px] text-tcm-jade font-bold uppercase tracking-tighter">{point.meridian}</div>
-                              </div>
+                  </div>
+                  
+                  {/* Mobile Search */}
+                  <div className="md:hidden relative flex flex-col gap-2 w-full">
+                    <div className="relative flex-1">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-tcm-gold" size={16} />
+                      <input
+                        type="text"
+                        placeholder="搜尋穴位名稱、代碼..."
+                        className="w-full pl-9 pr-4 py-2 bg-tcm-paper border border-tcm-gold/30 rounded-xl text-xs font-medium focus:outline-none focus:ring-1 focus:ring-tcm-jade transition-all"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            setDisplaySearchTerm(searchTerm);
+                            setIsSearchModalOpen(true);
+                          }
+                        }}
+                      />
+                    </div>
+                    <button
+                      onClick={() => {
+                        setDisplaySearchTerm(searchTerm);
+                        setIsSearchModalOpen(true);
+                      }}
+                      className="px-4 py-2 bg-tcm-jade text-white rounded-xl text-xs font-bold hover:bg-tcm-jade/90 transition-colors w-full"
+                    >
+                      搜尋
+                    </button>
+                  </div>
+
+                  <div className="flex gap-2 overflow-x-auto pb-2 custom-scrollbar md:hidden">
+                    <select 
+                      className="w-full text-xs bg-tcm-paper border border-tcm-gold/40 rounded-xl px-4 py-2 focus:outline-none focus:ring-1 focus:ring-tcm-jade font-bold"
+                      value={filterMeridian}
+                      onChange={(e) => setFilterMeridian(e.target.value)}
+                    >
+                      {meridians.map(m => (
+                        <option key={m} value={m}>{m === 'all' ? '全部經絡' : m}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="hidden md:flex gap-2 overflow-x-auto pb-2 custom-scrollbar">
+                    {meridians.map(m => (
+                      <button
+                        key={m}
+                        onClick={() => setFilterMeridian(m)}
+                        className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-colors ${filterMeridian === m ? 'bg-tcm-jade text-white' : 'bg-tcm-paper text-tcm-clay hover:bg-tcm-gold/10'}`}
+                      >
+                        {m === 'all' ? '全部' : m}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Bottom: List and Details */}
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full overflow-hidden">
+                  {/* Left: List */}
+                  <div className={`lg:col-span-4 ${selectedPoint ? 'hidden lg:flex' : 'flex'} flex-col gap-4 h-full overflow-hidden`}>
+                    <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-sm overflow-hidden flex flex-col h-full">
+                      <div className="flex-1 overflow-y-auto custom-scrollbar">
+                        <div className="divide-y divide-tcm-gold/5">
+                          {filteredPoints.length > 0 ? (
+                            filteredPoints.map((point) => (
+                              <button
+                                key={point.id}
+                                onClick={() => setSelectedPoint(point)}
+                                className={`w-full text-left p-4 hover:bg-tcm-paper transition-colors flex items-center justify-between group ${selectedPoint?.id === point.id ? 'bg-tcm-paper' : ''}`}
+                              >
+                                <div className="flex items-center gap-3">
+                                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold transition-all ${selectedPoint?.id === point.id ? 'bg-tcm-clay text-white shadow-lg shadow-tcm-clay/20' : 'bg-tcm-gold/10 text-tcm-clay'}`}>
+                                    {point.code}
+                                  </div>
+                                  <div>
+                                    <div className="font-bold text-tcm-ink text-sm">{point.name}</div>
+                                    <div className="text-[10px] text-tcm-jade font-bold uppercase tracking-tighter">{point.meridian}</div>
+                                  </div>
+                                </div>
+                                <ChevronRight size={14} className={`text-tcm-gold/20 group-hover:text-tcm-gold transition-transform ${selectedPoint?.id === point.id ? 'translate-x-1 text-tcm-gold' : ''}`} />
+                              </button>
+                            ))
+                          ) : (
+                            <div className="p-8 text-center text-tcm-clay/60 text-sm">
+                              找不到符合條件的穴位
                             </div>
-                            <ChevronRight size={14} className={`text-tcm-gold/20 group-hover:text-tcm-gold transition-transform ${selectedPoint?.id === point.id ? 'translate-x-1 text-tcm-gold' : ''}`} />
-                          </button>
-                        ))}
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
+
+                {/* Search Results Modal */}
+                <AnimatePresence>
+                  {isSearchModalOpen && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-50 flex items-center justify-center bg-tcm-ink/20 backdrop-blur-sm p-4"
+                      onClick={() => setIsSearchModalOpen(false)}
+                    >
+                      <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="p-6 border-b border-tcm-gold/10 flex justify-between items-center">
+                          <h3 className="font-serif font-bold text-xl text-tcm-ink">搜尋結果: "{displaySearchTerm}"</h3>
+                          <button onClick={() => setIsSearchModalOpen(false)} className="p-2 hover:bg-tcm-paper rounded-full">
+                            <X size={20} className="text-tcm-clay" />
+                          </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 grid grid-cols-2 md:grid-cols-3 gap-4">
+                          {filteredPoints.length > 0 ? (
+                            filteredPoints.map(point => (
+                              <button
+                                key={point.id}
+                                onClick={() => {
+                                  setSelectedPoint(point);
+                                  setIsSearchModalOpen(false);
+                                }}
+                                className="p-4 bg-tcm-paper rounded-2xl hover:bg-tcm-gold/10 transition-colors text-left"
+                              >
+                                <div className="font-bold text-tcm-ink">{point.name}</div>
+                                <div className="text-xs text-tcm-jade font-bold">{point.code}</div>
+                              </button>
+                            ))
+                          ) : (
+                            <div className="col-span-full p-8 text-center text-tcm-clay/60">找不到符合的穴位</div>
+                          )}
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Meridian Points Modal */}
+                <AnimatePresence>
+                  {filterMeridian !== 'all' && (
+                    <motion.div
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="fixed inset-0 z-50 flex items-center justify-center bg-tcm-ink/20 backdrop-blur-sm p-4"
+                      onClick={() => setFilterMeridian('all')}
+                    >
+                      <motion.div
+                        initial={{ scale: 0.9, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0.9, opacity: 0 }}
+                        className="bg-white rounded-3xl shadow-2xl w-full max-w-2xl max-h-[80vh] overflow-hidden flex flex-col"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <div className="p-6 border-b border-tcm-gold/10 flex justify-between items-center">
+                          <h3 className="font-serif font-bold text-xl text-tcm-ink">{filterMeridian} 穴位列表</h3>
+                          <button onClick={() => setFilterMeridian('all')} className="p-2 hover:bg-tcm-paper rounded-full">
+                            <X size={20} className="text-tcm-clay" />
+                          </button>
+                        </div>
+                        <div className="flex-1 overflow-y-auto custom-scrollbar p-6 grid grid-cols-2 md:grid-cols-3 gap-4">
+                          {ACUPOINTS.filter(p => p.meridian === filterMeridian).map(point => (
+                            <button
+                              key={point.id}
+                              onClick={() => {
+                                setSelectedPoint(point);
+                                setFilterMeridian('all');
+                              }}
+                              className="p-4 bg-tcm-paper rounded-2xl hover:bg-tcm-gold/10 transition-colors text-left"
+                            >
+                              <div className="font-bold text-tcm-ink">{point.name}</div>
+                              <div className="text-xs text-tcm-jade font-bold">{point.code}</div>
+                            </button>
+                          ))}
+                        </div>
+                      </motion.div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Right: Details */}
                 <div className={`lg:col-span-8 ${selectedPoint ? 'block' : 'hidden lg:block'}`}>
@@ -281,35 +449,28 @@ export default function App() {
                         exit={{ opacity: 0, x: -20 }}
                         className="bg-white rounded-3xl border border-tcm-gold/10 shadow-xl overflow-hidden"
                       >
-                        <div className="p-8 space-y-8">
-                          <div className="flex justify-between items-start">
-                            <div className="flex items-center gap-4">
-                              <button onClick={() => setSelectedPoint(null)} className="lg:hidden p-2 text-tcm-clay bg-tcm-paper rounded-full">
-                                <ChevronLeft size={20} />
-                              </button>
-                              <div>
-                                <div className="inline-flex items-center px-3 py-1 rounded-full bg-tcm-jade/10 text-tcm-jade text-[10px] font-bold tracking-widest uppercase mb-4">
-                                  {selectedPoint.meridian}
-                                </div>
-                                <h2 className="text-5xl font-serif font-bold text-tcm-ink mb-1">{selectedPoint.name}</h2>
-                                <p className="text-tcm-jade font-mono text-xl font-bold">{selectedPoint.code}</p>
-                              </div>
+                        <div className="p-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
+                          {/* Left: Meridian and Name */}
+                          <div className="lg:col-span-4 space-y-6 flex flex-col items-center text-center">
+                            <button onClick={() => setSelectedPoint(null)} className="lg:hidden p-2 text-tcm-clay bg-tcm-paper rounded-full self-start">
+                              <ChevronLeft size={20} />
+                            </button>
+                            <div className="inline-flex items-center px-3 py-1 rounded-full bg-tcm-jade/10 text-tcm-jade text-[10px] font-bold tracking-widest uppercase">
+                              {selectedPoint.meridian}
                             </div>
+                            <h2 className="text-5xl font-serif font-bold text-tcm-ink">{selectedPoint.name}</h2>
+                            <p className="text-tcm-jade font-mono text-xl font-bold">{selectedPoint.code}</p>
                           </div>
-                        </div>
-                        
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+
+                          {/* Right: Characteristics and Location */}
+                          <div className="lg:col-span-8 space-y-12">
                             <div className="space-y-4">
                               <h3 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/10 pb-2">
                                 <Info size={16} className="text-tcm-gold" /> 穴位特性
                               </h3>
-                              
-                              <div className="text-sm text-tcm-ink leading-relaxed bg-tcm-paper p-6 rounded-3xl italic relative overflow-hidden border border-tcm-gold/20">
-                                <div className="absolute top-0 right-0 p-4 opacity-5">
-                                  <BookOpen size={64} />
-                                </div>
+                              <div className="text-base text-tcm-ink leading-relaxed bg-transparent p-2 relative overflow-hidden">
                                 
-                                <div className="flex flex-wrap gap-2 mb-4 relative z-10">
+                                <div className="flex flex-wrap gap-2 mb-6">
                                   {selectedPoint.element && (
                                     <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold ${ELEMENT_COLORS[selectedPoint.element]}`}>
                                       {(() => {
@@ -345,9 +506,8 @@ export default function App() {
                                     </div>
                                   )}
                                 </div>
-
-                                <div className="relative z-10 font-medium">
-                                  {selectedPoint.characteristics || (
+                                <div className="font-medium">
+                                  {selectedPoint.characteristics || 
                                     !(selectedPoint.element || 
                                       selectedPoint.five_shu || 
                                       selectedPoint.is_yuan || 
@@ -357,8 +517,7 @@ export default function App() {
                                       selectedPoint.is_back_shu || 
                                       selectedPoint.is_eight_confluence || 
                                       selectedPoint.is_eight_influential || 
-                                      selectedPoint.is_crossing) && "暫無資料，待補充。"
-                                  )}
+                                      selectedPoint.is_crossing) ? "暫無資料，待補充。" : null}
                                 </div>
                               </div>
                             </div>
@@ -367,20 +526,11 @@ export default function App() {
                               <h3 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/10 pb-2">
                                 <Wind size={16} className="text-tcm-gold" /> 穴道位置
                               </h3>
-                              <div className="text-sm text-tcm-ink leading-relaxed bg-tcm-paper p-6 rounded-3xl border border-tcm-gold/20 font-medium">
+                              <div className="text-sm text-tcm-ink leading-relaxed bg-transparent p-2 font-medium">
                                 {selectedPoint.location}
                               </div>
-                          </div>
-
-                          {selectedPoint.is_four_general && (
-                            <div className="bg-tcm-ink text-white p-6 rounded-3xl shadow-xl relative overflow-hidden border border-tcm-gold/20">
-                              <div className="absolute -right-4 -bottom-4 opacity-10">
-                                <GraduationCap size={120} />
-                              </div>
-                              <div className="text-[10px] uppercase tracking-widest opacity-60 mb-2 font-bold text-tcm-gold">四總穴歌訣</div>
-                              <div className="font-serif text-2xl italic leading-relaxed">「{selectedPoint.is_four_general}」</div>
                             </div>
-                          )}
+                          </div>
                         </div>
                       </motion.div>
                     ) : (
