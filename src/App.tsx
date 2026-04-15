@@ -671,10 +671,12 @@ export default function App() {
                       <div className="bg-white rounded-[40px] border border-tcm-gold/10 shadow-2xl overflow-hidden">
                         <div className="p-10 md:p-16 space-y-12">
                           <div className="max-w-3xl space-y-6">
-                            <h2 className="text-5xl font-serif font-bold text-tcm-ink">{PRINCIPLES_DATA[selectedPrinciple].title}</h2>
+                            <h2 className="text-5xl font-serif font-bold text-tcm-ink">
+                              {selectedPrinciple && PRINCIPLES_DATA[selectedPrinciple] ? PRINCIPLES_DATA[selectedPrinciple].title : ''}
+                            </h2>
                             <div className="markdown-body">
                               <ReactMarkdown>
-                                {PRINCIPLES_DATA[selectedPrinciple].content}
+                                {selectedPrinciple && PRINCIPLES_DATA[selectedPrinciple] ? PRINCIPLES_DATA[selectedPrinciple].content : ''}
                               </ReactMarkdown>
                             </div>
                           </div>
@@ -685,7 +687,7 @@ export default function App() {
                             </h3>
                             
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                              {PRINCIPLES_DATA[selectedPrinciple].mappings.map((m, idx) => (
+                              {selectedPrinciple && PRINCIPLES_DATA[selectedPrinciple] && PRINCIPLES_DATA[selectedPrinciple].mappings.map((m, idx) => (
                                 <motion.div 
                                   key={m.label}
                                   initial={{ opacity: 0, y: 10 }}
