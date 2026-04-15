@@ -839,19 +839,19 @@ export default function App() {
                 exit={{ opacity: 0, x: 20 }}
                 className="space-y-8"
               >
-                <div className="max-w-3xl space-y-6">
-                  <h2 className="text-4xl font-serif font-bold text-tcm-ink">時間醫學：按時選穴</h2>
+                <div className="max-w-6xl space-y-6">
+                  <h2 className="text-5xl font-serif font-bold text-tcm-ink">時間醫學：按時選穴</h2>
                   
                   {/* Time Settings Card */}
-                  <div className="bg-white p-6 rounded-3xl border border-tcm-gold/20 shadow-sm space-y-4">
-                    <div className="flex flex-wrap items-center justify-between gap-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-tcm-jade/10 text-tcm-jade rounded-xl flex items-center justify-center">
-                          <Clock size={20} />
+                  <div className="bg-white p-8 rounded-3xl border-2 border-tcm-gold/20 shadow-md space-y-6">
+                    <div className="flex flex-wrap items-center justify-between gap-6">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-tcm-jade/10 text-tcm-jade rounded-xl flex items-center justify-center">
+                          <Clock size={24} />
                         </div>
                         <div>
-                          <div className="text-xs text-tcm-clay font-bold uppercase tracking-widest">當前計算時間</div>
-                          <div className="text-lg font-serif font-bold text-tcm-ink">
+                          <div className="text-sm text-tcm-clay font-bold uppercase tracking-widest">當前計算時間</div>
+                          <div className="text-2xl font-serif font-bold text-tcm-ink">
                             {effectiveTime.toLocaleString('zh-TW', { 
                               year: 'numeric', month: 'long', day: 'numeric', 
                               hour: '2-digit', minute: '2-digit', second: '2-digit',
@@ -902,7 +902,7 @@ export default function App() {
                         <div className="flex bg-tcm-paper p-1 rounded-xl border border-tcm-gold/10">
                           <button
                             onClick={() => setUseEarlyLateZi(false)}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                               !useEarlyLateZi ? 'bg-white text-tcm-ink shadow-sm' : 'text-tcm-clay/60 hover:text-tcm-ink'
                             }`}
                           >
@@ -910,7 +910,7 @@ export default function App() {
                           </button>
                           <button
                             onClick={() => setUseEarlyLateZi(true)}
-                            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
+                            className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
                               useEarlyLateZi ? 'bg-white text-tcm-ink shadow-sm' : 'text-tcm-clay/60 hover:text-tcm-ink'
                             }`}
                           >
@@ -919,228 +919,227 @@ export default function App() {
                         </div>
                       </div>
                       
-                      <div className="text-[10px] text-tcm-clay/60 italic">
+                      <div className="text-sm text-tcm-clay/80 italic">
                         當前干支：<span className="text-tcm-ink font-bold">{ganzhi.dayStem}{ganzhi.dayBranch}日 {ganzhi.hourStem}{ganzhi.hourBranch}時</span>
                       </div>
                     </div>
                   </div>
 
-                  <p className="text-tcm-clay/60 leading-relaxed text-sm">
+                  <p className="text-tcm-clay/80 leading-relaxed text-xl">
                     中醫認為人體氣血運行與自然界時間節律密切相關。
                     子午流注與靈龜八法是根據時間推算「開穴」的經典方法。
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-                  {/* Zi Wu Liu Zhu - Left Column */}
-                  <div className="lg:col-span-7 space-y-6">
-                    <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-xl overflow-hidden">
-                      <div className="p-8 space-y-8">
-                        <div className="flex items-center gap-3 text-tcm-clay border-b border-tcm-gold/10 pb-4">
-                          <Clock size={28} className="text-tcm-jade" />
-                          <h3 className="text-3xl font-serif font-bold">子午流注</h3>
+                <div className="space-y-12">
+                  {/* Zi Wu Liu Zhu - Top Section */}
+                  <div className="space-y-6">
+                    <div className="bg-white rounded-3xl border-2 border-tcm-gold/10 shadow-2xl overflow-hidden">
+                      <div className="p-10 space-y-10">
+                        <div className="flex items-center gap-4 text-tcm-clay border-b-2 border-tcm-gold/10 pb-6">
+                          <Clock size={36} className="text-tcm-jade" />
+                          <h3 className="text-4xl font-serif font-bold text-tcm-ink">子午流注</h3>
                         </div>
 
                         {/* Section: Na Zi Fa */}
-                        <div className="space-y-6">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <div className="w-1 h-6 bg-tcm-jade rounded-full" />
-                              <h4 className="text-xl font-serif font-bold text-tcm-ink">納子法 (按時循經)</h4>
-                            </div>
-                            <div className="px-4 py-1.5 bg-tcm-paper rounded-full text-tcm-clay text-xs font-bold border border-tcm-gold/10">
-                              當前：{currentShichen}時 ({zwlzMeridian.replace('手', '').replace('足', '')})
-                            </div>
-                          </div>
-
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Method 1: Mother-Son */}
-                            <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
-                              <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
-                                <Zap size={14} className="text-tcm-cinnabar" /> 補母瀉子法
-                              </h5>
-                            <div className="space-y-2">
-                              <div className="flex items-center justify-between text-xs">
-                                <span className="text-tcm-clay/60">實證 (瀉子)</span>
-                                <button 
-                                  onClick={() => {
-                                    const p = ACUPOINTS.find(ap => ap.name === currentNaZi.sonPoint);
-                                    if (p) {
-                                      navigateToPoint(p);
-                                    }
-                                  }}
-                                  className="font-bold text-tcm-cinnabar hover:underline"
-                                >
-                                  {currentNaZi.sonPoint}
-                                </button>
-                              </div>
-                              <div className="flex items-center justify-between text-xs">
-                                <span className="text-tcm-clay/60">虛證 (補母)</span>
-                                <button 
-                                  onClick={() => {
-                                    const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherPoint);
-                                    if (p) {
-                                      navigateToPoint(p);
-                                    }
-                                  }}
-                                  className="font-bold text-tcm-jade hover:underline"
-                                >
-                                  {currentNaZi.motherPoint}
-                                </button>
-                              </div>
-                            </div>
-                            <p className="text-[10px] text-tcm-clay/40 italic leading-tight">
-                              實則瀉其子，虛則補其母。當令之時，氣血最旺，補母瀉子效果最佳。
-                            </p>
-                          </div>
-
-                          {/* Method 2: Specific Shu-Stream */}
-                          <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
-                            <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
-                              <Activity size={14} className="text-tcm-jade" /> 專取俞穴法
-                            </h5>
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs text-tcm-clay/60">定時發作疾病</span>
-                              <button 
-                                onClick={() => {
-                                  const p = ACUPOINTS.find(ap => ap.name === currentNaZi.shuStreamPoint);
-                                  if (p) {
-                                    navigateToPoint(p);
-                                  }
-                                }}
-                                className="px-3 py-1 bg-tcm-clay text-white text-xs font-bold rounded-lg hover:bg-tcm-ink transition-colors"
-                              >
-                                {currentNaZi.shuStreamPoint}
-                              </button>
-                            </div>
-                            <p className="text-[10px] text-tcm-clay/40 italic leading-tight">
-                              「病時間時甚者取之俞」，取發作時間所屬流注經絡之俞穴.
-                            </p>
-                          </div>
-
-                          {/* Method 3: Shu-Mu Combination */}
-                          <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
-                            <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
-                              <Shield size={14} className="text-tcm-gold" /> 配俞募穴法
-                            </h5>
-                            <div className="flex flex-wrap gap-4">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-tcm-clay/60">背俞:</span>
-                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.backShu); if (p) { navigateToPoint(p); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.backShu}</button>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-tcm-clay/60">胸募:</span>
-                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.frontMu); if (p) { navigateToPoint(p); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.frontMu}</button>
-                              </div>
-                            </div>
-                            <p className="text-[10px] text-tcm-clay/40 italic leading-tight">
-                              在流注時辰取該經之背俞及胸腹募穴。
-                            </p>
-                          </div>
-
-                          {/* Method 4: Yuan-Luo Combination */}
-                          <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
-                            <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
-                              <Heart size={14} className="text-tcm-cinnabar" /> 原絡配穴法
-                            </h5>
-                            <div className="flex flex-wrap gap-4">
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-tcm-clay/60">本經原:</span>
-                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.yuanPoint); if (p) { navigateToPoint(p); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.yuanPoint}</button>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-xs text-tcm-clay/60">本經絡:</span>
-                                <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.luoPoint); if (p) { navigateToPoint(p); } }} className="text-xs font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.luoPoint}</button>
-                              </div>
-                            </div>
-                            <p className="text-[10px] text-tcm-clay/40 italic leading-tight">
-                              取當令經之原穴為主，配合其絡穴加強療效。
-                            </p>
-                          </div>
+                    <div className="space-y-8">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                          <div className="w-1.5 h-8 bg-tcm-jade rounded-full" />
+                          <h4 className="text-2xl font-serif font-bold text-tcm-ink">納子法 (按時循經)</h4>
                         </div>
-
-                        {/* Method 4: Five Shu Indications */}
-                        <div className="space-y-3">
-                          <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/5 pb-2">
-                            <GraduationCap size={16} className="text-tcm-gold" /> 取五輸穴法 (靈樞/難經)
-                          </h5>
-                          <div className="grid grid-cols-1 gap-2">
-                            {FIVE_SHU_INDICATIONS.map((item) => {
-                              // Try to find the point for the current meridian and type
-                              const point = ACUPOINTS.find(p => p.meridian === zwlzMeridian && p.five_shu === item.type);
-                              return (
-                                <div key={item.type} className="flex items-start gap-3 p-3 rounded-xl hover:bg-tcm-paper transition-colors group">
-                                  <div className="w-12 h-12 bg-tcm-clay/10 text-tcm-clay rounded-xl flex items-center justify-center text-sm font-bold shrink-0 group-hover:bg-tcm-ink group-hover:text-white transition-colors">
-                                    {item.type}
-                                  </div>
-                                  <div className="space-y-1 w-full">
-                                    <div className="flex items-center justify-between gap-2">
-                                      <span className="text-xs font-bold text-tcm-ink">{item.indication}</span>
-                                      {point && (
-                                        <button 
-                                          onClick={() => { navigateToPoint(point); }}
-                                          className="text-base font-serif font-bold text-tcm-ink hover:text-tcm-clay transition-colors px-2 py-1 bg-tcm-paper rounded-lg"
-                                        >
-                                          {point.name}
-                                        </button>
-                                      )}
-                                    </div>
-                                    <div className="text-[10px] text-tcm-clay/40 italic">{item.nanJing}</div>
-                                  </div>
-                                </div>
-                              );
-                            })}
-                          </div>
+                        <div className="px-6 py-2 bg-tcm-paper rounded-full text-tcm-ink text-sm font-bold border-2 border-tcm-gold/20">
+                          當前：{currentShichen}時 ({zwlzMeridian.replace('手', '').replace('足', '')})
                         </div>
                       </div>
 
-                        {/* Section: Na Jia Fa */}
-                        <div className="p-6 bg-tcm-paper rounded-3xl border border-tcm-gold/20 space-y-4 shadow-sm">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Method 1: Mother-Son */}
+                        <div className="p-6 bg-tcm-paper/50 rounded-2xl border-2 border-tcm-gold/10 space-y-4">
+                          <h5 className="text-lg font-bold text-tcm-ink flex items-center gap-2">
+                            <Zap size={18} className="text-tcm-cinnabar" /> 補母瀉子法
+                          </h5>
+                        <div className="space-y-3">
                           <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                              <Sparkles size={18} className="text-tcm-jade" />
-                              <h4 className="text-xl font-serif font-bold text-tcm-ink">納甲法 (徐氏引擎)</h4>
+                            <span className="text-sm text-tcm-clay/80 font-bold">實證 (瀉子)</span>
+                            <button 
+                              onClick={() => {
+                                const p = ACUPOINTS.find(ap => ap.name === currentNaZi.sonPoint);
+                                if (p) {
+                                  navigateToPoint(p);
+                                }
+                              }}
+                              className="text-2xl font-serif font-bold text-tcm-cinnabar hover:scale-110 transition-transform"
+                            >
+                              {currentNaZi.sonPoint}
+                            </button>
+                          </div>
+                          <div className="flex items-center justify-between">
+                            <span className="text-sm text-tcm-clay/80 font-bold">虛證 (補母)</span>
+                            <button 
+                              onClick={() => {
+                                const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherPoint);
+                                if (p) {
+                                  navigateToPoint(p);
+                                }
+                              }}
+                              className="text-2xl font-serif font-bold text-tcm-jade hover:scale-110 transition-transform"
+                            >
+                              {currentNaZi.motherPoint}
+                            </button>
+                          </div>
+                        </div>
+                        <p className="text-base text-tcm-clay/80 italic leading-relaxed">
+                          實則瀉其子，虛則補其母。當令之時，氣血最旺，補母瀉子效果最佳。
+                        </p>
+                      </div>
+
+                      {/* Method 2: Specific Shu-Stream */}
+                      <div className="p-6 bg-tcm-paper/50 rounded-2xl border-2 border-tcm-gold/10 space-y-4">
+                        <h5 className="text-lg font-bold text-tcm-ink flex items-center gap-2">
+                          <Activity size={18} className="text-tcm-jade" /> 專取俞穴法
+                        </h5>
+                        <div className="flex items-center justify-between">
+                          <span className="text-sm text-tcm-clay/80 font-bold">定時發作疾病</span>
+                          <button 
+                            onClick={() => {
+                              const p = ACUPOINTS.find(ap => ap.name === currentNaZi.shuStreamPoint);
+                              if (p) {
+                                navigateToPoint(p);
+                              }
+                            }}
+                            className="px-5 py-2 bg-tcm-clay text-white text-lg font-bold rounded-xl hover:bg-tcm-ink transition-all shadow-md"
+                          >
+                            {currentNaZi.shuStreamPoint}
+                          </button>
+                        </div>
+                        <p className="text-base text-tcm-clay/80 italic leading-relaxed">
+                          「病時間時甚者取之俞」，取發作時間所屬流注經絡之俞穴.
+                        </p>
+                      </div>
+
+                          {/* Method 3: Shu-Mu Combination */}
+                        <div className="p-6 bg-tcm-paper/50 rounded-2xl border-2 border-tcm-gold/10 space-y-4">
+                          <h5 className="text-lg font-bold text-tcm-ink flex items-center gap-2">
+                            <Shield size={18} className="text-tcm-gold" /> 配俞募穴法
+                          </h5>
+                          <div className="flex flex-wrap gap-8">
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-tcm-clay/80 font-bold">背俞:</span>
+                              <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.backShu); if (p) { navigateToPoint(p); } }} className="text-2xl font-serif font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.backShu}</button>
                             </div>
-                            <div className="flex flex-col items-end">
-                              <span className="text-[10px] font-bold bg-tcm-jade text-white px-2 py-0.5 rounded uppercase tracking-widest">
-                                {xuNaJiaResult.source.split(' ')[0]}
-                              </span>
-                              <span className="text-[8px] text-tcm-clay/60 font-bold mt-1">阿銘醫師整理</span>
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-tcm-clay/80 font-bold">胸募:</span>
+                              <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.frontMu); if (p) { navigateToPoint(p); } }} className="text-2xl font-serif font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.frontMu}</button>
                             </div>
                           </div>
-                          
-                          <div className="space-y-4">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="text-tcm-clay/60">當前時干：</span>
-                              <span className="font-bold text-tcm-ink">{xuNaJiaResult.hourStem}{ganzhi.hourBranch}時</span>
-                            </div>
+                          <p className="text-base text-tcm-clay/80 italic leading-relaxed">
+                            在流注時辰取該經之背俞及胸腹募穴。
+                          </p>
+                        </div>
 
-                            <div className="p-4 bg-white rounded-2xl border border-tcm-gold/10 space-y-3">
-                              <div className="flex items-center justify-between">
-                                <span className="text-[10px] text-tcm-clay font-bold uppercase tracking-widest">開穴結果</span>
-                                <span className="text-[10px] text-tcm-jade font-bold">{xuNaJiaResult.method}</span>
-                              </div>
-                              
-                              <div className="flex flex-wrap gap-2">
-                                {xuNaJiaResult.points.map(pName => (
-                                  <button
-                                    key={pName}
-                                    onClick={() => {
-                                      const p = ACUPOINTS.find(ap => ap.name === pName);
-                                      if (p) navigateToPoint(p);
-                                    }}
-                                    className="px-4 py-2 bg-tcm-paper border border-tcm-gold/30 rounded-xl text-sm font-bold text-tcm-ink hover:bg-tcm-jade hover:text-white transition-all shadow-sm flex items-center gap-2 group"
-                                  >
-                                    <span>{pName}</span>
-                                    <ChevronRight size={14} className="text-tcm-jade group-hover:text-white" />
-                                  </button>
-                                ))}
-                              </div>
+                        {/* Method 4: Yuan-Luo Combination */}
+                        <div className="p-6 bg-tcm-paper/50 rounded-2xl border-2 border-tcm-gold/10 space-y-4">
+                          <h5 className="text-lg font-bold text-tcm-ink flex items-center gap-2">
+                            <Heart size={18} className="text-tcm-cinnabar" /> 原絡配穴法
+                          </h5>
+                          <div className="flex flex-wrap gap-8">
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-tcm-clay/80 font-bold">本經原:</span>
+                              <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.yuanPoint); if (p) { navigateToPoint(p); } }} className="text-2xl font-serif font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.yuanPoint}</button>
                             </div>
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm text-tcm-clay/80 font-bold">本經絡:</span>
+                              <button onClick={() => { const p = ACUPOINTS.find(ap => ap.name === currentNaZi.luoPoint); if (p) { navigateToPoint(p); } }} className="text-2xl font-serif font-bold text-tcm-ink hover:text-tcm-gold transition-colors">{currentNaZi.luoPoint}</button>
+                            </div>
+                          </div>
+                          <p className="text-base text-tcm-clay/80 italic leading-relaxed">
+                            取當令經之原穴為主，配合其絡穴加強療效。
+                          </p>
+                        </div>
+                      </div>
 
-                            <div className="space-y-2">
-                              <div className="text-[10px] text-tcm-clay font-bold uppercase tracking-widest">計算流程 (SOP)</div>
-                              <div className="text-[10px] text-tcm-clay/60 space-y-1">
+                      {/* Method 4: Five Shu Indications */}
+                      <div className="space-y-6">
+                        <h5 className="text-xl font-serif font-bold text-tcm-ink flex items-center gap-3 border-b-2 border-tcm-gold/10 pb-4">
+                          <GraduationCap size={24} className="text-tcm-gold" /> 取五輸穴法 (靈樞/難經)
+                        </h5>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {FIVE_SHU_INDICATIONS.map((item) => {
+                            const point = ACUPOINTS.find(p => p.meridian === zwlzMeridian && p.five_shu === item.type);
+                            return (
+                              <div key={item.type} className="flex items-start gap-4 p-5 rounded-2xl bg-tcm-paper/30 border border-tcm-gold/10 hover:bg-tcm-paper hover:border-tcm-gold/30 transition-all group">
+                                <div className="w-16 h-16 bg-tcm-clay/10 text-tcm-clay rounded-2xl flex items-center justify-center text-lg font-bold shrink-0 group-hover:bg-tcm-ink group-hover:text-white transition-colors">
+                                  {item.type}
+                                </div>
+                                <div className="space-y-2 w-full">
+                                  <div className="flex items-center justify-between gap-3">
+                                    <span className="text-sm font-bold text-tcm-ink">{item.indication}</span>
+                                    {point && (
+                                      <button 
+                                        onClick={() => { navigateToPoint(point); }}
+                                        className="text-2xl font-serif font-bold text-tcm-ink hover:text-tcm-clay transition-colors px-4 py-2 bg-white rounded-xl shadow-sm border border-tcm-gold/10"
+                                      >
+                                        {point.name}
+                                      </button>
+                                    )}
+                                  </div>
+                                  <div className="text-sm text-tcm-clay/70 italic">{item.nanJing}</div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+
+                      {/* Section: Na Jia Fa */}
+                      <div className="p-10 bg-tcm-paper rounded-3xl border-2 border-tcm-gold/20 space-y-8 shadow-inner">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Sparkles size={28} className="text-tcm-jade" />
+                            <h4 className="text-3xl font-serif font-bold text-tcm-ink">納甲法 (徐鳳《針灸大全》)</h4>
+                          </div>
+                          <div className="flex flex-col items-end">
+                            <span className="text-sm font-bold bg-tcm-jade text-white px-4 py-1 rounded uppercase tracking-widest">
+                              {xuNaJiaResult.source.split(' ')[0]}
+                            </span>
+                            <span className="text-xs text-tcm-clay/60 font-bold mt-2">阿銘醫師整理</span>
+                          </div>
+                        </div>
+                        
+                        <div className="space-y-6">
+                          <div className="flex items-center justify-between text-lg">
+                            <span className="text-tcm-clay/80 font-bold">當前時干：</span>
+                            <span className="font-bold text-tcm-ink bg-white px-4 py-1 rounded-lg shadow-sm">{xuNaJiaResult.hourStem}{ganzhi.hourBranch}時</span>
+                          </div>
+
+                          <div className="p-8 bg-white rounded-3xl border-2 border-tcm-gold/10 space-y-6 shadow-sm">
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-tcm-clay font-bold uppercase tracking-widest">開穴結果</span>
+                              <span className="text-sm text-tcm-jade font-bold">{xuNaJiaResult.method}</span>
+                            </div>
+                            
+                            <div className="flex flex-wrap gap-4">
+                              {xuNaJiaResult.points.map(pName => (
+                                <button
+                                  key={pName}
+                                  onClick={() => {
+                                    const p = ACUPOINTS.find(ap => ap.name === pName);
+                                    if (p) navigateToPoint(p);
+                                  }}
+                                  className="px-8 py-4 bg-tcm-paper border-2 border-tcm-gold/30 rounded-2xl text-2xl font-serif font-bold text-tcm-ink hover:bg-tcm-jade hover:text-white hover:border-tcm-jade transition-all shadow-md flex items-center gap-3 group"
+                                >
+                                  <span>{pName}</span>
+                                  <ChevronRight size={20} className="text-tcm-jade group-hover:text-white" />
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                            <div className="space-y-4">
+                              <div className="text-sm text-tcm-clay font-bold uppercase tracking-widest">計算流程 (SOP)</div>
+                              <div className="text-sm text-tcm-clay/80 space-y-2">
                                 <p className={xuNaJiaResult.source.includes('High Priority') ? 'text-tcm-jade font-bold' : ''}>1. 檢查『氣納三焦』或『血歸包絡』</p>
                                 <p className={xuNaJiaResult.source.includes('Primary') ? 'text-tcm-jade font-bold' : ''}>2. 檢索『當日日干』特定開穴</p>
                                 <p className={xuNaJiaResult.source.includes('Transformation') ? 'text-tcm-jade font-bold' : ''}>3. 執行『五門十變』(合化日) 檢索</p>
@@ -1149,7 +1148,7 @@ export default function App() {
                             </div>
                           </div>
                           
-                          <p className="text-[10px] text-tcm-clay/60 leading-tight italic font-medium pt-2 border-t border-tcm-gold/5">
+                          <p className="text-sm text-tcm-clay/80 leading-relaxed italic font-medium pt-4 border-t-2 border-tcm-gold/10">
                             「剛柔相配，陰陽相合，氣血循環，時穴開闔也。」——《徐氏子午流注》
                           </p>
                         </div>
@@ -1157,27 +1156,27 @@ export default function App() {
                     </div>
                   </div>
 
-                  {/* Ling Gui Ba Fa - Right Column */}
-                  <div className="lg:col-span-5 space-y-6">
-                    <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-xl overflow-hidden">
-                      <div className="p-8 space-y-6">
-                        <div className="flex items-center gap-3 text-tcm-clay">
-                          <Zap size={24} className="text-tcm-cinnabar" />
-                          <h3 className="text-2xl font-serif font-bold">靈龜八法</h3>
+                  {/* Ling Gui Ba Fa - Bottom Section */}
+                  <div className="space-y-6">
+                    <div className="bg-white rounded-3xl border-2 border-tcm-gold/10 shadow-2xl overflow-hidden">
+                      <div className="p-10 space-y-10">
+                        <div className="flex items-center gap-4 text-tcm-clay border-b-2 border-tcm-gold/10 pb-6">
+                          <Zap size={36} className="text-tcm-cinnabar" />
+                          <h3 className="text-4xl font-serif font-bold text-tcm-ink">靈龜八法</h3>
                         </div>
 
-                        <div className="bg-tcm-paper rounded-2xl p-6 border border-tcm-gold/10 space-y-4">
-                          <div className="flex items-center justify-between text-xs font-bold text-tcm-clay/40 uppercase tracking-widest">
+                        <div className="bg-tcm-paper rounded-3xl p-10 border-2 border-tcm-gold/20 space-y-8 shadow-inner">
+                          <div className="flex items-center justify-between text-sm font-bold text-tcm-clay uppercase tracking-widest">
                             <span>九宮八卦推算</span>
-                            <span>餘數：{lingGuiNum}</span>
+                            <span className="bg-white px-3 py-1 rounded-lg border border-tcm-gold/10">餘數：{lingGuiNum}</span>
                           </div>
                           
-                          <div className="flex items-center gap-6">
-                            <div className="w-20 h-20 bg-tcm-clay text-white rounded-2xl flex flex-col items-center justify-center shadow-lg shadow-tcm-clay/20">
-                              <span className="text-3xl font-serif font-bold">{LING_GUI_POINTS[lingGuiNum].hexagram}</span>
+                          <div className="flex flex-wrap items-center gap-12">
+                            <div className="w-32 h-32 bg-tcm-clay text-white rounded-3xl flex flex-col items-center justify-center shadow-2xl shadow-tcm-clay/30 border-4 border-white">
+                              <span className="text-5xl font-serif font-bold">{LING_GUI_POINTS[lingGuiNum].hexagram}</span>
                             </div>
-                            <div className="space-y-1">
-                              <div className="text-sm text-tcm-clay/60">當前開穴：</div>
+                            <div className="space-y-3">
+                              <div className="text-lg text-tcm-clay font-bold">當前開穴：</div>
                               <button 
                                 onClick={() => {
                                   const p = ACUPOINTS.find(ap => ap.name === lingGuiPointName);
@@ -1185,27 +1184,27 @@ export default function App() {
                                     navigateToPoint(p);
                                   }
                                 }}
-                                className="text-4xl font-serif font-bold text-tcm-ink hover:text-tcm-clay transition-colors"
+                                className="text-7xl font-serif font-bold text-tcm-ink hover:text-tcm-clay hover:scale-105 transition-all"
                               >
                                 {lingGuiPointName}
                               </button>
                             </div>
                           </div>
 
-                          <div className="pt-4 border-t border-tcm-gold/5">
-                            <p className="text-xs text-tcm-clay/60 leading-relaxed italic">
+                          <div className="pt-6 border-t-2 border-tcm-gold/10">
+                            <p className="text-lg text-tcm-clay/90 leading-relaxed italic font-medium">
                               「坎一聯申脈，照海坤二五...」根據日、時干支基數計算，餘數對應八脈交會穴。
                             </p>
                           </div>
                         </div>
 
-                        <div className="space-y-4">
-                          <h4 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
-                            <Layout size={16} className="text-tcm-gold" /> 八脈交會穴對應
+                        <div className="space-y-6">
+                          <h4 className="text-xl font-serif font-bold text-tcm-ink flex items-center gap-3">
+                            <Layout size={24} className="text-tcm-gold" /> 八脈交會穴對應
                           </h4>
-                          <div className="grid grid-cols-1 gap-3">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {LING_GUI_PAIRS.map((pairData, idx) => (
-                              <div key={idx} className="grid grid-cols-2 gap-3">
+                              <div key={idx} className="grid grid-cols-2 gap-4">
                                 {pairData.pair.map((pName, pIdx) => {
                                   const isActive = pName === lingGuiPointName;
                                   return (
@@ -1217,12 +1216,12 @@ export default function App() {
                                           navigateToPoint(p);
                                         }
                                       }}
-                                      className={`p-3 rounded-xl border text-left transition-all ${isActive ? 'bg-tcm-clay border-tcm-clay text-white shadow-lg' : 'bg-white border-tcm-gold/10 text-tcm-ink hover:bg-tcm-paper'}`}
+                                      className={`p-6 rounded-2xl border-2 text-left transition-all ${isActive ? 'bg-tcm-clay border-tcm-clay text-white shadow-xl scale-105 z-10' : 'bg-white border-tcm-gold/10 text-tcm-ink hover:bg-tcm-paper hover:border-tcm-gold/30'}`}
                                     >
-                                      <div className="flex items-center justify-between mb-1">
-                                        <span className="text-[10px] font-bold opacity-60">{pairData.hexagrams[pIdx]}</span>
+                                      <div className="flex items-center justify-between mb-2">
+                                        <span className={`text-xs font-bold ${isActive ? 'text-white/70' : 'text-tcm-clay/60'}`}>{pairData.hexagrams[pIdx]}</span>
                                       </div>
-                                      <div className="font-bold">{pName}</div>
+                                      <div className="text-2xl font-serif font-bold">{pName}</div>
                                     </button>
                                   );
                                 })}
