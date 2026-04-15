@@ -131,7 +131,7 @@ export default function App() {
         <div className="p-6 flex items-center gap-3 border-b border-tcm-gold/5">
           <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-tcm-gold/10 shrink-0 overflow-hidden border border-tcm-gold/10">
             <img 
-              src="/Logo.png" 
+              src={`${import.meta.env.BASE_URL}Logo.png`} 
               alt="Logo" 
               className="w-full h-full object-cover"
               referrerPolicy="no-referrer"
