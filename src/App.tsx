@@ -129,8 +129,13 @@ export default function App() {
       {/* Sidebar Navigation */}
       <aside className="w-20 md:w-64 bg-white border-r border-tcm-gold/20 flex flex-col sticky top-0 h-screen z-40">
         <div className="p-6 flex items-center gap-3 border-b border-tcm-gold/5">
-          <div className="w-10 h-10 bg-tcm-jade rounded-2xl flex items-center justify-center text-white shadow-lg shadow-tcm-jade/20 shrink-0">
-            <Activity size={24} />
+          <div className="w-10 h-10 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-tcm-gold/10 shrink-0 overflow-hidden border border-tcm-gold/10">
+            <img 
+              src="/Logo.jpg" 
+              alt="Logo" 
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
           </div>
           <div className="hidden md:block overflow-hidden">
             <h1 className="text-lg font-serif font-bold tracking-tight whitespace-nowrap text-tcm-ink">靈樞流注精要</h1>
