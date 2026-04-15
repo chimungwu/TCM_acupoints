@@ -344,8 +344,8 @@ export default function App() {
 
                 {/* Bottom: List and Details */}
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full overflow-hidden">
-                  {/* Left: List */}
-                  <div className={`lg:col-span-4 ${selectedPoint ? 'hidden lg:flex' : 'flex'} flex-col gap-4 h-full overflow-hidden`}>
+                  {/* Left: List (Hidden by user request) */}
+                  <div className="hidden lg:col-span-4 flex-col gap-4 h-full overflow-hidden">
                     <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-sm overflow-hidden flex flex-col h-full">
                       <div className="flex-1 overflow-y-auto custom-scrollbar">
                         <div className="divide-y divide-tcm-gold/5">
@@ -475,7 +475,7 @@ export default function App() {
                 </AnimatePresence>
 
                 {/* Right: Details */}
-                <div className={`lg:col-span-8 ${selectedPoint ? 'block' : 'hidden lg:block'}`}>
+                <div className={`lg:col-span-12 ${selectedPoint ? 'block' : 'hidden lg:block'}`}>
                   <AnimatePresence mode="wait">
                     {selectedPoint ? (
                       <motion.div
@@ -590,7 +590,7 @@ export default function App() {
                         </div>
                         <div className="max-w-xs">
                           <h3 className="text-2xl font-serif font-bold text-tcm-ink mb-2">探索中醫經絡</h3>
-                          <p className="text-sm text-tcm-clay/60">從左側列表中選擇一個穴位，深入了解其特性、五行屬性及臨床應用。</p>
+                          <p className="text-sm text-tcm-clay/60">使用上方搜尋框或經絡篩選來尋找穴位，深入了解其特性、五行屬性及臨床應用。</p>
                         </div>
                       </div>
                     )}
