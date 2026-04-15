@@ -348,10 +348,10 @@ export default function App() {
                 </div>
 
                 {/* Bottom: List and Details */}
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 h-full overflow-hidden">
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 overflow-hidden">
                   {/* Left: List (Hidden by user request) */}
-                  <div className="hidden lg:col-span-4 flex-col gap-4 h-full overflow-hidden">
-                    <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-sm overflow-hidden flex flex-col h-full">
+                  <div className="hidden lg:col-span-4 flex-col gap-4 overflow-hidden">
+                    <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-sm overflow-hidden flex flex-col">
                       <div className="flex-1 overflow-y-auto custom-scrollbar">
                         <div className="divide-y divide-tcm-gold/5">
                           {filteredPoints.length > 0 ? (
@@ -384,6 +384,129 @@ export default function App() {
                         </div>
                       </div>
                     </div>
+                  </div>
+
+                  {/* Right: Details */}
+                  <div className={`lg:col-span-12 ${selectedPoint ? 'block' : 'hidden lg:block'}`}>
+                    <AnimatePresence mode="wait">
+                      {selectedPoint ? (
+                        <motion.div
+                          key={selectedPoint.id}
+                          initial={{ opacity: 0, x: 20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          exit={{ opacity: 0, x: -20 }}
+                          className="bg-white rounded-3xl border border-tcm-gold/10 shadow-xl overflow-hidden"
+                        >
+                          <div className="p-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
+                            {/* Left: Meridian and Name */}
+                            <div className="lg:col-span-4 space-y-6 flex flex-col items-center text-center">
+                              <div className="w-full flex justify-between items-center lg:block">
+                                <button onClick={() => setSelectedPoint(null)} className="lg:hidden p-2 text-tcm-clay bg-tcm-paper rounded-full">
+                                  <ChevronLeft size={20} />
+                                </button>
+                                
+                                {previousView && (
+                                  <button 
+                                    onClick={() => {
+                                      setActiveView(previousView);
+                                      setPreviousView(null);
+                                    }}
+                                    className="flex items-center gap-1.5 px-3 py-1.5 bg-tcm-paper text-tcm-jade hover:bg-tcm-jade hover:text-white transition-all font-bold text-xs rounded-xl border border-tcm-jade/20"
+                                  >
+                                    <ChevronLeft size={14} /> 返回{navItems.find(n => n.id === previousView)?.label}
+                                  </button>
+                                )}
+                              </div>
+                              
+                              <div className="inline-flex items-center px-3 py-1 rounded-full bg-tcm-jade/10 text-tcm-jade text-[10px] font-bold tracking-widest uppercase">
+                                {selectedPoint.meridian}
+                              </div>
+                              <h2 className="text-5xl font-serif font-bold text-tcm-ink">{selectedPoint.name}</h2>
+                              <p className="text-tcm-jade font-mono text-xl font-bold">{selectedPoint.code}</p>
+                            </div>
+
+                            {/* Right: Characteristics and Location */}
+                            <div className="lg:col-span-8 space-y-12">
+                              <div className="space-y-4">
+                                <h3 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/10 pb-2">
+                                  <Info size={16} className="text-tcm-gold" /> 穴位特性
+                                </h3>
+                                <div className="text-base text-tcm-ink leading-relaxed bg-transparent p-2 relative overflow-hidden">
+                                  
+                                  <div className="flex flex-wrap gap-2 mb-6">
+                                    {selectedPoint.element && (
+                                      <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold ${ELEMENT_COLORS[selectedPoint.element]}`}>
+                                        {(() => {
+                                          const Icon = ELEMENT_ICONS[selectedPoint.element];
+                                          return Icon ? <Icon size={12} /> : null;
+                                        })()}
+                                        五行：{selectedPoint.element}
+                                      </div>
+                                    )}
+                                    {selectedPoint.five_shu && (
+                                      <div className="px-3 py-1.5 rounded-xl bg-white text-slate-900 text-[10px] font-bold border border-slate-300">
+                                        五輸穴：{selectedPoint.five_shu}
+                                      </div>
+                                    )}
+                                    {selectedPoint.is_yuan && <div className="px-3 py-1.5 rounded-xl bg-orange-100 text-orange-900 text-[10px] font-bold border border-orange-300">原穴</div>}
+                                    {selectedPoint.is_luo && <div className="px-3 py-1.5 rounded-xl bg-purple-100 text-purple-900 text-[10px] font-bold border border-purple-300">絡穴</div>}
+                                    {selectedPoint.is_xi && <div className="px-3 py-1.5 rounded-xl bg-red-100 text-red-900 text-[10px] font-bold border border-red-300">郄穴</div>}
+                                    {selectedPoint.is_mu && <div className="px-3 py-1.5 rounded-xl bg-indigo-100 text-indigo-900 text-[10px] font-bold border border-indigo-300">募穴</div>}
+                                    {selectedPoint.is_back_shu && <div className="px-3 py-1.5 rounded-xl bg-blue-100 text-blue-900 text-[10px] font-bold border border-blue-300">背俞穴</div>}
+                                    {selectedPoint.is_eight_confluence && (
+                                      <div className="px-3 py-1.5 rounded-xl bg-cyan-100 text-cyan-900 text-[10px] font-bold border border-cyan-300">
+                                        八脈交會：{selectedPoint.is_eight_confluence}
+                                      </div>
+                                    )}
+                                    {selectedPoint.is_eight_influential && (
+                                      <div className="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 text-[10px] font-bold border border-emerald-300">
+                                        八會穴：{selectedPoint.is_eight_influential}
+                                      </div>
+                                    )}
+                                    {selectedPoint.is_crossing && (
+                                      <div className="px-3 py-1.5 rounded-xl bg-amber-100 text-amber-900 text-[10px] font-bold border border-amber-300">
+                                        交會穴：{selectedPoint.is_crossing}
+                                      </div>
+                                    )}
+                                  </div>
+                                  <div className="font-medium">
+                                    {!(selectedPoint.element || 
+                                        selectedPoint.five_shu || 
+                                        selectedPoint.is_yuan || 
+                                        selectedPoint.is_luo || 
+                                        selectedPoint.is_xi || 
+                                        selectedPoint.is_mu || 
+                                        selectedPoint.is_back_shu || 
+                                        selectedPoint.is_eight_confluence || 
+                                        selectedPoint.is_eight_influential || 
+                                        selectedPoint.is_crossing) ? "暫無資料，待補充。" : null}
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="space-y-4">
+                                <h3 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/10 pb-2">
+                                  <Wind size={16} className="text-tcm-gold" /> 穴道位置
+                                </h3>
+                                <div className="text-sm text-tcm-ink leading-relaxed bg-transparent p-2 font-medium">
+                                  {selectedPoint.location}
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ) : (
+                        <div className="bg-white rounded-3xl border border-tcm-gold/10 border-dashed p-20 flex flex-col items-center justify-center text-center space-y-6">
+                          <div className="w-24 h-24 bg-tcm-paper rounded-full flex items-center justify-center text-tcm-clay/20">
+                            <BookOpen size={48} />
+                          </div>
+                          <div className="max-w-xs">
+                            <h3 className="text-2xl font-serif font-bold text-tcm-ink mb-2">探索中醫經絡</h3>
+                            <p className="text-sm text-tcm-clay/60">使用上方搜尋框或經絡篩選來尋找穴位，深入了解其特性、五行屬性及臨床應用。</p>
+                          </div>
+                        </div>
+                      )}
+                    </AnimatePresence>
                   </div>
                 </div>
 
@@ -479,128 +602,7 @@ export default function App() {
                   )}
                 </AnimatePresence>
 
-                {/* Right: Details */}
-                <div className={`lg:col-span-12 ${selectedPoint ? 'block' : 'hidden lg:block'}`}>
-                  <AnimatePresence mode="wait">
-                    {selectedPoint ? (
-                      <motion.div
-                        key={selectedPoint.id}
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -20 }}
-                        className="bg-white rounded-3xl border border-tcm-gold/10 shadow-xl overflow-hidden"
-                      >
-                        <div className="p-10 grid grid-cols-1 lg:grid-cols-12 gap-12">
-                          {/* Left: Meridian and Name */}
-                          <div className="lg:col-span-4 space-y-6 flex flex-col items-center text-center">
-                            <div className="w-full flex justify-between items-center lg:block">
-                              <button onClick={() => setSelectedPoint(null)} className="lg:hidden p-2 text-tcm-clay bg-tcm-paper rounded-full">
-                                <ChevronLeft size={20} />
-                              </button>
-                              
-                              {previousView && (
-                                <button 
-                                  onClick={() => {
-                                    setActiveView(previousView);
-                                    setPreviousView(null);
-                                  }}
-                                  className="flex items-center gap-1.5 px-3 py-1.5 bg-tcm-paper text-tcm-jade hover:bg-tcm-jade hover:text-white transition-all font-bold text-xs rounded-xl border border-tcm-jade/20"
-                                >
-                                  <ChevronLeft size={14} /> 返回{navItems.find(n => n.id === previousView)?.label}
-                                </button>
-                              )}
-                            </div>
-                            
-                            <div className="inline-flex items-center px-3 py-1 rounded-full bg-tcm-jade/10 text-tcm-jade text-[10px] font-bold tracking-widest uppercase">
-                              {selectedPoint.meridian}
-                            </div>
-                            <h2 className="text-5xl font-serif font-bold text-tcm-ink">{selectedPoint.name}</h2>
-                            <p className="text-tcm-jade font-mono text-xl font-bold">{selectedPoint.code}</p>
-                          </div>
 
-                          {/* Right: Characteristics and Location */}
-                          <div className="lg:col-span-8 space-y-12">
-                            <div className="space-y-4">
-                              <h3 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/10 pb-2">
-                                <Info size={16} className="text-tcm-gold" /> 穴位特性
-                              </h3>
-                              <div className="text-base text-tcm-ink leading-relaxed bg-transparent p-2 relative overflow-hidden">
-                                
-                                <div className="flex flex-wrap gap-2 mb-6">
-                                  {selectedPoint.element && (
-                                    <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[10px] font-bold ${ELEMENT_COLORS[selectedPoint.element]}`}>
-                                      {(() => {
-                                        const Icon = ELEMENT_ICONS[selectedPoint.element];
-                                        return Icon ? <Icon size={12} /> : null;
-                                      })()}
-                                      五行：{selectedPoint.element}
-                                    </div>
-                                  )}
-                                  {selectedPoint.five_shu && (
-                                    <div className="px-3 py-1.5 rounded-xl bg-white text-slate-900 text-[10px] font-bold border border-slate-300">
-                                      五輸穴：{selectedPoint.five_shu}
-                                    </div>
-                                  )}
-                                  {selectedPoint.is_yuan && <div className="px-3 py-1.5 rounded-xl bg-orange-100 text-orange-900 text-[10px] font-bold border border-orange-300">原穴</div>}
-                                  {selectedPoint.is_luo && <div className="px-3 py-1.5 rounded-xl bg-purple-100 text-purple-900 text-[10px] font-bold border border-purple-300">絡穴</div>}
-                                  {selectedPoint.is_xi && <div className="px-3 py-1.5 rounded-xl bg-red-100 text-red-900 text-[10px] font-bold border border-red-300">郄穴</div>}
-                                  {selectedPoint.is_mu && <div className="px-3 py-1.5 rounded-xl bg-indigo-100 text-indigo-900 text-[10px] font-bold border border-indigo-300">募穴</div>}
-                                  {selectedPoint.is_back_shu && <div className="px-3 py-1.5 rounded-xl bg-blue-100 text-blue-900 text-[10px] font-bold border border-blue-300">背俞穴</div>}
-                                  {selectedPoint.is_eight_confluence && (
-                                    <div className="px-3 py-1.5 rounded-xl bg-cyan-100 text-cyan-900 text-[10px] font-bold border border-cyan-300">
-                                      八脈交會：{selectedPoint.is_eight_confluence}
-                                    </div>
-                                  )}
-                                  {selectedPoint.is_eight_influential && (
-                                    <div className="px-3 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 text-[10px] font-bold border border-emerald-300">
-                                      八會穴：{selectedPoint.is_eight_influential}
-                                    </div>
-                                  )}
-                                  {selectedPoint.is_crossing && (
-                                    <div className="px-3 py-1.5 rounded-xl bg-amber-100 text-amber-900 text-[10px] font-bold border border-amber-300">
-                                      交會穴：{selectedPoint.is_crossing}
-                                    </div>
-                                  )}
-                                </div>
-                                <div className="font-medium">
-                                  {!(selectedPoint.element || 
-                                      selectedPoint.five_shu || 
-                                      selectedPoint.is_yuan || 
-                                      selectedPoint.is_luo || 
-                                      selectedPoint.is_xi || 
-                                      selectedPoint.is_mu || 
-                                      selectedPoint.is_back_shu || 
-                                      selectedPoint.is_eight_confluence || 
-                                      selectedPoint.is_eight_influential || 
-                                      selectedPoint.is_crossing) ? "暫無資料，待補充。" : null}
-                                </div>
-                              </div>
-                            </div>
-
-                            <div className="space-y-4">
-                              <h3 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/10 pb-2">
-                                <Wind size={16} className="text-tcm-gold" /> 穴道位置
-                              </h3>
-                              <div className="text-sm text-tcm-ink leading-relaxed bg-transparent p-2 font-medium">
-                                {selectedPoint.location}
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ) : (
-                      <div className="bg-white rounded-3xl border border-tcm-gold/10 border-dashed p-20 flex flex-col items-center justify-center text-center space-y-6 h-full">
-                        <div className="w-24 h-24 bg-tcm-paper rounded-full flex items-center justify-center text-tcm-clay/20">
-                          <BookOpen size={48} />
-                        </div>
-                        <div className="max-w-xs">
-                          <h3 className="text-2xl font-serif font-bold text-tcm-ink mb-2">探索中醫經絡</h3>
-                          <p className="text-sm text-tcm-clay/60">使用上方搜尋框或經絡篩選來尋找穴位，深入了解其特性、五行屬性及臨床應用。</p>
-                        </div>
-                      </div>
-                    )}
-                  </AnimatePresence>
-                </div>
               </motion.div>
             )}
 
