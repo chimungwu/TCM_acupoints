@@ -7,14 +7,6 @@ export const EARTHLY_BRANCHES = ['子', '丑', '寅', '卯', '辰', '巳', '午'
 export const SHICHEN = ['子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'];
 
 /**
- * Get Taiwan Time (UTC+8)
- */
-export function getTaiwanTime(date: Date): Date {
-  const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
-  return new Date(utc + (8 * 3600000));
-}
-
-/**
  * Get the Shichen (Chinese hour) based on the hour of the day (0-23)
  */
 export function getShichenIndex(hour: number): number {
@@ -55,11 +47,10 @@ export function getMonthGanzhi(year: number, month: number): string {
  * Basic Ganzhi calculation
  */
 export function getGanzhi(date: Date, useEarlyLateZi: boolean = false) {
-  const twDate = getTaiwanTime(date);
-  const hour = twDate.getHours();
+  const hour = date.getHours();
   
   // Determine the date to use for Day Pillar calculation
-  let dayDate = new Date(twDate);
+  let dayDate = new Date(date);
   
   if (useEarlyLateZi) {
     // 早晚子時 (子正換日): 00:00 才換日柱
@@ -99,8 +90,8 @@ export function getGanzhi(date: Date, useEarlyLateZi: boolean = false) {
   const hourStem = HEAVENLY_STEMS[hourStemIdx];
 
   return {
-    year: getYearGanzhi(twDate.getFullYear()),
-    month: getMonthGanzhi(twDate.getFullYear(), twDate.getMonth()),
+    year: getYearGanzhi(date.getFullYear()),
+    month: getMonthGanzhi(date.getFullYear(), date.getMonth()),
     day: `${dayStem}${dayBranch}`,
     hour: `${hourStem}${hourBranch}`,
     dayStem,
@@ -167,105 +158,126 @@ export const FIVE_SHU_INDICATIONS = [
 ];
 
 /**
- * Na Jia Fa (納甲法) - New SOP Implementation
+ * Xu's Zi Wu Liu Zhu (徐氏子午流注) - Updated SOP Implementation
  */
-export interface NaJiaResult {
-  primary: string | null;
-  alternative: string;
+export interface XuNaJiaResult {
+  points: string[];
+  method: string;
   hourStem: string;
-  transformation: string;
+  source: string;
 }
 
-const STEM_TO_MERIDIAN: Record<string, string> = {
-  '甲': '足少陽膽經',
-  '乙': '足厥陰肝經',
-  '丙': '手太陽小腸經',
-  '丁': '手少陰心經',
-  '戊': '足陽明胃經',
-  '己': '足太陰脾經',
-  '庚': '手陽明大腸經',
-  '辛': '手太陰肺經',
-  '壬': '足太陽膀胱經',
-  '癸': '足少陰腎經',
+const XU_HIGH_PRIORITY_RULES: Record<string, string> = {
+  '壬子': '關衝',
+  '甲申': '液門',
+  '丙午': '中渚',
+  '戊辰': '支溝',
+  '庚寅': '天井',
+  '癸酉': '中衝',
+  '乙未': '勞宮',
+  '丁巳': '大陵',
+  '己卯': '間使',
+  '辛丑': '曲澤',
 };
 
-const MERIDIAN_FIVE_SHU: Record<string, string[]> = {
-  '足少陽膽經': ['足竅陰', '俠溪', '足臨泣', '陽輔', '陽陵泉'],
-  '足厥陰肝經': ['大敦', '行間', '太衝', '中封', '曲泉'],
-  '手太陽小腸經': ['少澤', '前谷', '後溪', '陽谷', '小海'],
-  '手少陰心經': ['少衝', '少府', '神門', '靈道', '少海'],
-  '足陽明胃經': ['厲兌', '內庭', '陷谷', '解谿', '足三里'],
-  '足太陰脾經': ['隱白', '大都', '太白', '商丘', '陰陵泉'],
-  '手陽明大腸經': ['商陽', '二間', '三間', '陽溪', '曲池'],
-  '手太陰肺經': ['少商', '魚際', '太淵', '經渠', '尺澤'],
-  '足太陽膀胱經': ['至陰', '足通谷', '束骨', '昆崙', '委中'],
-  '足少陰腎經': ['湧泉', '然谷', '太溪', '復溜', '陰谷'],
+const XU_DAILY_FORMULA: Record<string, Record<string, string[]>> = {
+  '甲': { '戌': ['竅陰'], '子': ['前谷'], '寅': ['陷谷'], '辰': ['陽谿'], '午': ['委中'] },
+  '乙': { '酉': ['大敦'], '亥': ['少府'], '丑': ['太白'], '卯': ['經渠'], '巳': ['陰谷'] },
+  '丙': { '申': ['少澤'], '戌': ['內庭'], '子': ['三間'], '寅': ['崑崙'], '辰': ['陽陵泉'] },
+  '丁': { '未': ['少衝'], '酉': ['大都'], '亥': ['太淵'], '丑': ['復溜'], '卯': ['曲泉'] },
+  '戊': { '午': ['厲兌'], '申': ['二間'], '戌': ['束骨'], '子': ['陽輔'], '寅': ['小海'] },
+  '己': { '巳': ['隱白'], '未': ['魚際'], '酉': ['太溪'], '亥': ['中封'], '丑': ['少海'] },
+  '庚': { '辰': ['商陽'], '午': ['通谷'], '申': ['臨泣'], '戌': ['陽谷'], '子': ['三里'] },
+  '辛': { '卯': ['少商'], '巳': ['然谷'], '未': ['太衝'], '酉': ['靈道'], '亥': ['陰陵泉'] },
+  '壬': { '寅': ['至陰'], '辰': ['俠谿'], '午': ['後谿'], '申': ['解谿'], '戌': ['曲池'] },
+  '癸': { '亥': ['湧泉'], '丑': ['行間'], '卯': ['神門'], '巳': ['商丘'], '未': ['尺澤'] },
 };
 
-const YANG_YUAN_POINTS: Record<string, string> = {
-  '足少陽膽經': '丘墟',
-  '手太陽小腸經': '腕骨',
-  '足陽明胃經': '衝陽',
-  '手陽明大腸經': '合谷',
-  '足太陽膀胱經': '京骨',
+const TRANSFORMATION_PAIRS: Record<string, string> = {
+  '甲': '己', '己': '甲',
+  '乙': '庚', '庚': '乙',
+  '丙': '辛', '辛': '丙',
+  '丁': '壬', '壬': '丁',
+  '戊': '癸', '癸': '戊',
 };
 
-const TRANSFORMATION_MAP: Record<string, string> = {
-  '甲': '土', '己': '土',
-  '乙': '金', '庚': '金',
-  '丙': '水', '辛': '水',
-  '丁': '木', '壬': '木',
-  '戊': '火', '癸': '火',
+const NA_ZI_FA_YUAN_POINTS: Record<string, string> = {
+  '寅': '太淵', '卯': '合谷', '辰': '衝陽', '巳': '太白',
+  '午': '神門', '未': '腕骨', '申': '京骨', '酉': '太谿',
+  '戌': '大陵', '亥': '陽池', '子': '丘墟', '丑': '太衝',
 };
 
-export function calculateNaJia(dayStem: string, hourBranch: string): NaJiaResult {
-  const dayStemIdx = HEAVENLY_STEMS.indexOf(dayStem);
-  const hourBranchIdx = EARTHLY_BRANCHES.indexOf(hourBranch);
+export function calculateXuNaJia(dayStem: string, hourBranch: string): XuNaJiaResult {
+  const getHourStem = (dStem: string, hBranch: string) => {
+    const dIdx = HEAVENLY_STEMS.indexOf(dStem);
+    const hIdx = EARTHLY_BRANCHES.indexOf(hBranch);
+    const hStemIdx = (dIdx % 5 * 2 + hIdx) % 10;
+    return HEAVENLY_STEMS[hStemIdx];
+  };
+
+  const currentHourStem = getHourStem(dayStem, hourBranch);
+  const currentFullHour = currentHourStem + hourBranch;
   
-  // 1. Get Hour Stem (Wu Shu Dun)
-  // Formula: (Day_Stem_Idx % 5 * 2 + 2 + Hour_Branch_Idx) % 10
-  const hourStemIdx = (dayStemIdx % 5 * 2 + 2 + hourBranchIdx) % 10;
-  const hourStem = HEAVENLY_STEMS[hourStemIdx];
-  
-  // 2. Primary Open Check
-  let primary: string | null = null;
-  const isYangDay = ['甲', '丙', '戊', '庚', '壬'].includes(dayStem);
-  const isYangHour = ['甲', '丙', '戊', '庚', '壬'].includes(hourStem);
-  
-  // Traditional Na Jia Sequence Logic (Simplified to match SOP "符合序列")
-  if (isYangDay && isYangHour) {
-    const yangStems = ['甲', '丙', '戊', '庚', '壬'];
-    const stemPos = yangStems.indexOf(hourStem);
-    const meridian = STEM_TO_MERIDIAN[dayStem];
-    const shu = MERIDIAN_FIVE_SHU[meridian];
-    const yuan = YANG_YUAN_POINTS[meridian];
-    
-    // Sequence: 井(0), 滎(1), 輸(2), 原(yuan), 經(3), 合(4)
-    const sequence = [shu[0], shu[1], shu[2], yuan, shu[3], shu[4]];
-    primary = sequence[stemPos] || null;
-  } else if (!isYangDay && !isYangHour) {
-    const yinStems = ['乙', '丁', '己', '辛', '癸'];
-    const stemPos = yinStems.indexOf(hourStem);
-    const meridian = STEM_TO_MERIDIAN[dayStem];
-    const shu = MERIDIAN_FIVE_SHU[meridian];
-    
-    // Sequence: 井(0), 滎(1), 輸(2), 經(3), 合(4)
-    primary = shu[stemPos] || null;
+  // Step 2: High Priority Rules (Qi Na San Jiao / Xue Gui Bao Luo)
+  const priorityPoint = XU_HIGH_PRIORITY_RULES[currentFullHour];
+  if (priorityPoint) {
+    const isYangHour = ['甲', '丙', '戊', '庚', '壬'].includes(currentHourStem);
+    return {
+      points: [priorityPoint],
+      method: isYangHour ? '氣納三焦 (陽氣之父)' : '血納包絡 (陰血之母)',
+      hourStem: currentHourStem,
+      source: '最高優先權 (High Priority)'
+    };
   }
-  
-  // 3. Alternative Gate (Five Gates Ten Transformations)
-  const altMeridian = STEM_TO_MERIDIAN[hourStem];
-  const pos = (hourBranchIdx % 5) + 1;
-  const altPoint = MERIDIAN_FIVE_SHU[altMeridian][pos - 1];
-  const transformation = TRANSFORMATION_MAP[hourStem];
 
+  // Step 3: Check Daily Formula
+  let points = XU_DAILY_FORMULA[dayStem]?.[hourBranch];
+  if (points) {
+    return {
+      points,
+      method: '逐日按時定穴',
+      hourStem: currentHourStem,
+      source: '主穴 (Primary)'
+    };
+  }
+
+  // Step 4: Five Gates Ten Transformations
+  const pairedDay = TRANSFORMATION_PAIRS[dayStem];
+  const pairedHourStem = getHourStem(pairedDay, hourBranch);
+  const pairedFullHour = pairedHourStem + hourBranch;
+  
+  // Check if paired day has priority rule for this hour
+  const pairedPriorityPoint = XU_HIGH_PRIORITY_RULES[pairedFullHour];
+  if (pairedPriorityPoint) {
+    const isYangHour = ['甲', '丙', '戊', '庚', '壬'].includes(pairedHourStem);
+    return {
+      points: [pairedPriorityPoint],
+      method: `五門十變 (${isYangHour ? '氣納三焦' : '血納包絡'})`,
+      hourStem: currentHourStem,
+      source: '合化優先 (Transformation Priority)'
+    };
+  }
+
+  points = XU_DAILY_FORMULA[pairedDay]?.[hourBranch];
+  if (points) {
+    return {
+      points,
+      method: `五門十變 (合化日：${pairedDay}日)`,
+      hourStem: currentHourStem,
+      source: '合化開穴 (Transformation)'
+    };
+  }
+
+  // Step 5: Na Zi Fa Fallback
+  const fallbackPoint = NA_ZI_FA_YUAN_POINTS[hourBranch];
   return {
-    primary,
-    alternative: altPoint,
-    hourStem,
-    transformation
+    points: [fallbackPoint],
+    method: '納子法',
+    hourStem: currentHourStem,
+    source: '時辰原穴 (Fallback)'
   };
 }
+
 /**
  * Ling Gui Ba Fa (靈龜八法) - Accurate calculation based on provided base numbers
  */

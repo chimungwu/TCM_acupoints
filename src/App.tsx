@@ -15,7 +15,7 @@ import {
   getGanzhi, getShichenName, ZI_WU_LIU_ZHU_MAP, 
   calculateLingGuiNumber, LING_GUI_POINTS, LING_GUI_PAIRS,
   NA_ZI_FA_DATA, FIVE_SHU_INDICATIONS, EARTHLY_BRANCHES,
-  calculateNaJia
+  calculateXuNaJia
 } from './lib/tcm-utils';
 import { PRINCIPLES_DATA, PrincipleDetail } from './data/principles';
 import { RHYMES_DATA, Rhyme } from './data/rhymes';
@@ -113,7 +113,7 @@ export default function App() {
   const lingGuiNum = calculateLingGuiNumber(ganzhi.dayStem, ganzhi.dayBranch, ganzhi.hourStem, ganzhi.hourBranch);
   const lingGuiPointName = LING_GUI_POINTS[lingGuiNum].point;
 
-  const naJiaResult = calculateNaJia(ganzhi.dayStem, ganzhi.hourBranch);
+  const xuNaJiaResult = calculateXuNaJia(ganzhi.dayStem, ganzhi.hourBranch);
 
   const navItems = [
     { id: 'author', label: '關於作者', icon: Info },
@@ -832,9 +832,93 @@ export default function App() {
                 exit={{ opacity: 0, x: 20 }}
                 className="space-y-8"
               >
-                <div className="max-w-3xl">
-                  <h2 className="text-4xl font-serif font-bold text-tcm-ink mb-4">時間醫學：按時選穴</h2>
-                  <p className="text-tcm-clay/60 leading-relaxed">
+                <div className="max-w-3xl space-y-6">
+                  <h2 className="text-4xl font-serif font-bold text-tcm-ink">時間醫學：按時選穴</h2>
+                  
+                  {/* Time Settings Card */}
+                  <div className="bg-white p-6 rounded-3xl border border-tcm-gold/20 shadow-sm space-y-4">
+                    <div className="flex flex-wrap items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-tcm-jade/10 text-tcm-jade rounded-xl flex items-center justify-center">
+                          <Clock size={20} />
+                        </div>
+                        <div>
+                          <div className="text-xs text-tcm-clay font-bold uppercase tracking-widest">當前計算時間</div>
+                          <div className="text-lg font-serif font-bold text-tcm-ink">
+                            {effectiveTime.toLocaleString('zh-TW', { 
+                              year: 'numeric', month: 'long', day: 'numeric', 
+                              hour: '2-digit', minute: '2-digit', second: '2-digit',
+                              hour12: false 
+                            })}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setIsManualTime(!isManualTime)}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                            !isManualTime 
+                              ? 'bg-tcm-jade text-white shadow-lg shadow-tcm-jade/20' 
+                              : 'bg-tcm-paper text-tcm-clay hover:bg-tcm-gold/10'
+                          }`}
+                        >
+                          系統時間
+                        </button>
+                        <button
+                          onClick={() => setIsManualTime(!isManualTime)}
+                          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                            isManualTime 
+                              ? 'bg-tcm-jade text-white shadow-lg shadow-tcm-jade/20' 
+                              : 'bg-tcm-paper text-tcm-clay hover:bg-tcm-gold/10'
+                          }`}
+                        >
+                          手動設定
+                        </button>
+                      </div>
+                    </div>
+
+                    {isManualTime && (
+                      <div className="pt-4 border-t border-tcm-gold/5 flex flex-wrap items-center gap-4">
+                        <input
+                          type="datetime-local"
+                          value={manualTimeStr}
+                          onChange={(e) => setManualTimeStr(e.target.value)}
+                          className="bg-tcm-paper border border-tcm-gold/20 rounded-xl px-4 py-2 text-sm font-bold text-tcm-ink focus:outline-none focus:ring-2 focus:ring-tcm-jade/50"
+                        />
+                      </div>
+                    )}
+
+                    <div className="pt-4 border-t border-tcm-gold/5 flex items-center gap-6">
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs text-tcm-clay font-bold">換日系統：</span>
+                        <div className="flex bg-tcm-paper p-1 rounded-xl border border-tcm-gold/10">
+                          <button
+                            onClick={() => setUseEarlyLateZi(false)}
+                            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
+                              !useEarlyLateZi ? 'bg-white text-tcm-ink shadow-sm' : 'text-tcm-clay/60 hover:text-tcm-ink'
+                            }`}
+                          >
+                            子初換日 (23:00)
+                          </button>
+                          <button
+                            onClick={() => setUseEarlyLateZi(true)}
+                            className={`px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${
+                              useEarlyLateZi ? 'bg-white text-tcm-ink shadow-sm' : 'text-tcm-clay/60 hover:text-tcm-ink'
+                            }`}
+                          >
+                            子正換日 (00:00)
+                          </button>
+                        </div>
+                      </div>
+                      
+                      <div className="text-[10px] text-tcm-clay/60 italic">
+                        當前干支：<span className="text-tcm-ink font-bold">{ganzhi.dayStem}{ganzhi.dayBranch}日 {ganzhi.hourStem}{ganzhi.hourBranch}時</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <p className="text-tcm-clay/60 leading-relaxed text-sm">
                     中醫認為人體氣血運行與自然界時間節律密切相關。
                     子午流注與靈龜八法是根據時間推算「開穴」的經典方法。
                   </p>
@@ -995,62 +1079,64 @@ export default function App() {
                           </div>
                         </div>
 
-                        {/* Method 5: Na Jia Fa */}
+                        {/* Method 5: Xu's Na Jia Fa */}
                         <div className="p-6 bg-tcm-paper rounded-3xl border border-tcm-gold/20 space-y-4 shadow-sm">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <Sparkles size={18} className="text-tcm-jade" />
-                              <h4 className="text-lg font-serif font-bold text-tcm-ink">子午流注 (納甲法)</h4>
+                              <h4 className="text-lg font-serif font-bold text-tcm-ink">徐氏子午流注開穴計算引擎</h4>
                             </div>
                             <div className="flex flex-col items-end">
-                              <span className="text-[10px] font-bold bg-tcm-jade text-white px-2 py-0.5 rounded uppercase tracking-widest">五門十變</span>
-                              <span className="text-[8px] text-tcm-clay/60 font-bold mt-1">時干：{naJiaResult.hourStem} ({naJiaResult.transformation}化)</span>
+                              <span className="text-[10px] font-bold bg-tcm-jade text-white px-2 py-0.5 rounded uppercase tracking-widest">
+                                {xuNaJiaResult.source.split(' ')[0]}
+                              </span>
+                              <span className="text-[8px] text-tcm-clay/60 font-bold mt-1">阿銘醫師整理</span>
                             </div>
                           </div>
                           
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            {/* Primary Point */}
-                            <div className="space-y-2">
-                              <div className="text-[10px] text-tcm-clay font-bold uppercase tracking-widest">主穴 (Primary)</div>
-                              {naJiaResult.primary ? (
-                                <button
-                                  onClick={() => {
-                                    const p = ACUPOINTS.find(ap => ap.name === naJiaResult.primary);
-                                    if (p) navigateToPoint(p);
-                                  }}
-                                  className="w-full px-4 py-3 bg-white border border-tcm-jade/30 rounded-2xl text-base font-serif font-bold text-tcm-ink hover:bg-tcm-jade hover:text-white transition-all shadow-sm flex items-center justify-between group"
-                                >
-                                  <span>{naJiaResult.primary}</span>
-                                  <ChevronRight size={16} className="text-tcm-jade group-hover:text-white" />
-                                </button>
-                              ) : (
-                                <div className="px-4 py-3 bg-tcm-paper/50 border border-tcm-gold/10 rounded-2xl text-xs italic text-tcm-clay/40 font-medium">
-                                  主穴關閉 (Null)
-                                </div>
-                              )}
+                          <div className="space-y-4">
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-tcm-clay/60">當前時干：</span>
+                              <span className="font-bold text-tcm-ink">{xuNaJiaResult.hourStem}{ganzhi.hourBranch}時</span>
                             </div>
 
-                            {/* Alternative Point */}
+                            <div className="p-4 bg-white rounded-2xl border border-tcm-gold/10 space-y-3">
+                              <div className="flex items-center justify-between">
+                                <span className="text-[10px] text-tcm-clay font-bold uppercase tracking-widest">開穴結果</span>
+                                <span className="text-[10px] text-tcm-jade font-bold">{xuNaJiaResult.method}</span>
+                              </div>
+                              
+                              <div className="flex flex-wrap gap-2">
+                                {xuNaJiaResult.points.map(pName => (
+                                  <button
+                                    key={pName}
+                                    onClick={() => {
+                                      const p = ACUPOINTS.find(ap => ap.name === pName);
+                                      if (p) navigateToPoint(p);
+                                    }}
+                                    className="px-4 py-2 bg-tcm-paper border border-tcm-gold/30 rounded-xl text-sm font-bold text-tcm-ink hover:bg-tcm-jade hover:text-white transition-all shadow-sm flex items-center gap-2 group"
+                                  >
+                                    <span>{pName}</span>
+                                    <ChevronRight size={14} className="text-tcm-jade group-hover:text-white" />
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
+
                             <div className="space-y-2">
-                              <div className="text-[10px] text-tcm-clay font-bold uppercase tracking-widest">替代穴 (Alternative)</div>
-                              <button
-                                onClick={() => {
-                                  const p = ACUPOINTS.find(ap => ap.name === naJiaResult.alternative);
-                                  if (p) navigateToPoint(p);
-                                }}
-                                className="w-full px-4 py-3 bg-white border border-tcm-cinnabar/30 rounded-2xl text-base font-serif font-bold text-tcm-ink hover:bg-tcm-cinnabar hover:text-white transition-all shadow-sm flex items-center justify-between group"
-                              >
-                                <span>{naJiaResult.alternative}</span>
-                                <ChevronRight size={16} className="text-tcm-cinnabar group-hover:text-white" />
-                              </button>
+                              <div className="text-[10px] text-tcm-clay font-bold uppercase tracking-widest">計算流程 (SOP)</div>
+                              <div className="text-[10px] text-tcm-clay/60 space-y-1">
+                                <p className={xuNaJiaResult.source.includes('High Priority') ? 'text-tcm-jade font-bold' : ''}>1. 檢查『氣納三焦』或『血歸包絡』</p>
+                                <p className={xuNaJiaResult.source.includes('Primary') ? 'text-tcm-jade font-bold' : ''}>2. 檢索『當日日干』特定開穴</p>
+                                <p className={xuNaJiaResult.source.includes('Transformation') ? 'text-tcm-jade font-bold' : ''}>3. 執行『五門十變』(合化日) 檢索</p>
+                                <p className={xuNaJiaResult.source.includes('Fallback') ? 'text-tcm-jade font-bold' : ''}>4. 執行『納子法』(時辰原穴)</p>
+                              </div>
                             </div>
                           </div>
-
-                          <div className="pt-2 border-t border-tcm-gold/5">
-                            <p className="text-[10px] text-tcm-clay/60 leading-tight italic font-medium">
-                              當主穴關閉時，由時干接手。時干五行屬{naJiaResult.transformation}，當前時支位序為第{(EARTHLY_BRANCHES.indexOf(ganzhi.hourBranch) % 5) + 1}位。
-                            </p>
-                          </div>
+                          
+                          <p className="text-[10px] text-tcm-clay/60 leading-tight italic font-medium pt-2 border-t border-tcm-gold/5">
+                            「剛柔相配，陰陽相合，氣血循環，時穴開闔也。」——《徐氏子午流注》
+                          </p>
                         </div>
                       </div>
                     </div>
