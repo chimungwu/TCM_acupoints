@@ -841,9 +841,9 @@ export default function App() {
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: 20 }}
-                className="space-y-8"
+                className="max-w-7xl mx-auto space-y-12 pb-32"
               >
-                <div className="max-w-6xl space-y-6">
+                <div className="space-y-6">
                   <h2 className="text-5xl font-serif font-bold text-tcm-ink">時間醫學：按時選穴</h2>
                   
                   {/* Time Settings Card */}
