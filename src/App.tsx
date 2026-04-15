@@ -10,6 +10,7 @@ import {
   Calendar, Zap, Heart, Shield, Activity, Sparkles, X
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import ReactMarkdown from 'react-markdown';
 import { ACUPOINTS, Acupoint } from './data/acupoints';
 import { 
   getGanzhi, getShichenName, ZI_WU_LIU_ZHU_MAP, 
@@ -557,8 +558,7 @@ export default function App() {
                                   )}
                                 </div>
                                 <div className="font-medium">
-                                  {selectedPoint.characteristics || 
-                                    !(selectedPoint.element || 
+                                  {!(selectedPoint.element || 
                                       selectedPoint.five_shu || 
                                       selectedPoint.is_yuan || 
                                       selectedPoint.is_luo || 
@@ -663,11 +663,13 @@ export default function App() {
 
                       <div className="bg-white rounded-[40px] border border-tcm-gold/10 shadow-2xl overflow-hidden">
                         <div className="p-10 md:p-16 space-y-12">
-                          <div className="max-w-3xl space-y-4">
+                          <div className="max-w-3xl space-y-6">
                             <h2 className="text-5xl font-serif font-bold text-tcm-ink">{PRINCIPLES_DATA[selectedPrinciple].title}</h2>
-                            <p className="text-xl text-tcm-jade font-serif font-bold leading-relaxed italic">
-                              {PRINCIPLES_DATA[selectedPrinciple].content}
-                            </p>
+                            <div className="markdown-body">
+                              <ReactMarkdown>
+                                {PRINCIPLES_DATA[selectedPrinciple].content}
+                              </ReactMarkdown>
+                            </div>
                           </div>
 
                           <div className="grid grid-cols-1 gap-4">
@@ -928,23 +930,30 @@ export default function App() {
                   {/* Zi Wu Liu Zhu - Left Column */}
                   <div className="lg:col-span-7 space-y-6">
                     <div className="bg-white rounded-3xl border border-tcm-gold/10 shadow-xl overflow-hidden">
-                      <div className="p-8 space-y-6">
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center gap-3 text-tcm-clay">
-                            <Clock size={24} className="text-tcm-jade" />
-                            <h3 className="text-2xl font-serif font-bold">子午流注 (納子法)</h3>
-                          </div>
-                          <div className="px-4 py-1.5 bg-tcm-paper rounded-full text-tcm-clay text-xs font-bold border border-tcm-gold/10">
-                            當前：{currentShichen}時 ({zwlzMeridian.replace('手', '').replace('足', '')})
-                          </div>
+                      <div className="p-8 space-y-8">
+                        <div className="flex items-center gap-3 text-tcm-clay border-b border-tcm-gold/10 pb-4">
+                          <Clock size={28} className="text-tcm-jade" />
+                          <h3 className="text-3xl font-serif font-bold">子午流注</h3>
                         </div>
 
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {/* Method 1: Mother-Son */}
-                          <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
-                            <h4 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
-                              <Zap size={14} className="text-tcm-cinnabar" /> 補母瀉子法
-                            </h4>
+                        {/* Section: Na Zi Fa */}
+                        <div className="space-y-6">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <div className="w-1 h-6 bg-tcm-jade rounded-full" />
+                              <h4 className="text-xl font-serif font-bold text-tcm-ink">納子法 (按時循經)</h4>
+                            </div>
+                            <div className="px-4 py-1.5 bg-tcm-paper rounded-full text-tcm-clay text-xs font-bold border border-tcm-gold/10">
+                              當前：{currentShichen}時 ({zwlzMeridian.replace('手', '').replace('足', '')})
+                            </div>
+                          </div>
+
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            {/* Method 1: Mother-Son */}
+                            <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
+                              <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
+                                <Zap size={14} className="text-tcm-cinnabar" /> 補母瀉子法
+                              </h5>
                             <div className="space-y-2">
                               <div className="flex items-center justify-between text-xs">
                                 <span className="text-tcm-clay/60">實證 (瀉子)</span>
@@ -982,9 +991,9 @@ export default function App() {
 
                           {/* Method 2: Specific Shu-Stream */}
                           <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
-                            <h4 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
+                            <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
                               <Activity size={14} className="text-tcm-jade" /> 專取俞穴法
-                            </h4>
+                            </h5>
                             <div className="flex items-center justify-between">
                               <span className="text-xs text-tcm-clay/60">定時發作疾病</span>
                               <button 
@@ -1006,9 +1015,9 @@ export default function App() {
 
                           {/* Method 3: Shu-Mu Combination */}
                           <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
-                            <h4 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
+                            <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
                               <Shield size={14} className="text-tcm-gold" /> 配俞募穴法
-                            </h4>
+                            </h5>
                             <div className="flex flex-wrap gap-4">
                               <div className="flex items-center gap-2">
                                 <span className="text-xs text-tcm-clay/60">背俞:</span>
@@ -1026,9 +1035,9 @@ export default function App() {
 
                           {/* Method 4: Yuan-Luo Combination */}
                           <div className="p-5 bg-tcm-paper/50 rounded-2xl border border-tcm-gold/10 space-y-3">
-                            <h4 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
+                            <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2">
                               <Heart size={14} className="text-tcm-cinnabar" /> 原絡配穴法
-                            </h4>
+                            </h5>
                             <div className="flex flex-wrap gap-4">
                               <div className="flex items-center gap-2">
                                 <span className="text-xs text-tcm-clay/60">本經原:</span>
@@ -1047,9 +1056,9 @@ export default function App() {
 
                         {/* Method 4: Five Shu Indications */}
                         <div className="space-y-3">
-                          <h4 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/5 pb-2">
+                          <h5 className="text-sm font-bold text-tcm-ink flex items-center gap-2 border-b border-tcm-gold/5 pb-2">
                             <GraduationCap size={16} className="text-tcm-gold" /> 取五輸穴法 (靈樞/難經)
-                          </h4>
+                          </h5>
                           <div className="grid grid-cols-1 gap-2">
                             {FIVE_SHU_INDICATIONS.map((item) => {
                               // Try to find the point for the current meridian and type
@@ -1078,13 +1087,14 @@ export default function App() {
                             })}
                           </div>
                         </div>
+                      </div>
 
-                        {/* Method 5: Xu's Na Jia Fa */}
+                        {/* Section: Na Jia Fa */}
                         <div className="p-6 bg-tcm-paper rounded-3xl border border-tcm-gold/20 space-y-4 shadow-sm">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <Sparkles size={18} className="text-tcm-jade" />
-                              <h4 className="text-lg font-serif font-bold text-tcm-ink">徐氏子午流注開穴計算引擎</h4>
+                              <h4 className="text-xl font-serif font-bold text-tcm-ink">納甲法 (徐氏引擎)</h4>
                             </div>
                             <div className="flex flex-col items-end">
                               <span className="text-[10px] font-bold bg-tcm-jade text-white px-2 py-0.5 rounded uppercase tracking-widest">
