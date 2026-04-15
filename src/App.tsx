@@ -1412,7 +1412,7 @@ export default function App() {
 
                     <section className="pt-8 border-t border-tcm-gold/10 mt-8">
                       <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-tcm-clay/60">
-                        <p>© 2024 吳啓銘 中醫博士. All rights reserved.</p>
+                        <p>© 2026 吳啓銘 中醫博士. All rights reserved.</p>
                         <div className="flex items-center gap-2">
                           <span>本站內容採用</span>
                           <a 
