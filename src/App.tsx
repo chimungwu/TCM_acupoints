@@ -980,17 +980,20 @@ export default function App() {
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-sm text-tcm-clay/80 font-bold">虛證 (補母)</span>
-                            <button 
-                              onClick={() => {
-                                const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherPoint);
-                                if (p) {
-                                  navigateToPoint(p);
-                                }
-                              }}
-                              className="text-2xl font-serif font-bold text-tcm-jade hover:scale-110 transition-transform"
-                            >
-                              {currentNaZi.motherPoint}
-                            </button>
+                            <div className="flex flex-col items-end gap-1">
+                              <span className="text-[10px] text-tcm-clay/60 font-medium">{currentNaZi.motherMeridian}</span>
+                              <button 
+                                onClick={() => {
+                                  const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherMeridianPoint);
+                                  if (p) {
+                                    navigateToPoint(p);
+                                  }
+                                }}
+                                className="text-2xl font-serif font-bold text-tcm-jade hover:scale-110 transition-transform"
+                              >
+                                {currentNaZi.motherMeridianPoint}
+                              </button>
+                            </div>
                           </div>
                         </div>
                         <p className="text-base text-tcm-clay/80 italic leading-relaxed">
@@ -1313,37 +1316,9 @@ export default function App() {
                 </div>
 
                 {prescription.length > 0 && (
-                  <motion.div 
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    className="bg-tcm-ink rounded-3xl p-8 text-white shadow-2xl relative overflow-hidden"
-                  >
-                    <div className="absolute top-0 right-0 p-8 opacity-10">
-                      <GraduationCap size={160} />
-                    </div>
-                    <div className="relative space-y-6">
-                      <h3 className="text-2xl font-serif font-bold flex items-center gap-3">
-                        <Zap className="text-tcm-gold" /> 配穴方案分析 (AI 輔助)
-                      </h3>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
-                          <div className="text-[10px] uppercase tracking-widest opacity-60 mb-1">主要功效</div>
-                          <div className="font-bold">調理氣血，疏肝理氣</div>
-                        </div>
-                        <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
-                          <div className="text-[10px] uppercase tracking-widest opacity-60 mb-1">五行平衡</div>
-                          <div className="font-bold">木火相生，土氣充盈</div>
-                        </div>
-                        <div className="bg-white/10 rounded-2xl p-4 border border-white/10">
-                          <div className="text-[10px] uppercase tracking-widest opacity-60 mb-1">建議適應症</div>
-                          <div className="font-bold">失眠、焦慮、消化不良</div>
-                        </div>
-                      </div>
-                      <button className="w-full py-4 bg-tcm-gold text-tcm-ink font-bold rounded-2xl hover:bg-tcm-gold-light transition-all shadow-xl shadow-tcm-gold/20">
-                        生成詳細臨床報告
-                      </button>
-                    </div>
-                  </motion.div>
+                  <div className="bg-tcm-paper/50 rounded-3xl p-8 border border-tcm-gold/10 text-center">
+                    <p className="text-tcm-clay/60 italic font-medium">方案已建立，您可以根據上述穴位進行臨床配穴參考。</p>
+                  </div>
                 )}
               </motion.div>
             )}
