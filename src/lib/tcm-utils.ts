@@ -209,6 +209,11 @@ const NA_ZI_FA_YUAN_POINTS: Record<string, string> = {
   '戌': '大陵', '亥': '陽池', '子': '丘墟', '丑': '太衝',
 };
 
+const DAY_STEM_ROOT_POINTS: Record<string, string> = {
+  '甲': '丘墟', '乙': '太衝', '丙': '腕骨', '丁': '神門', '戊': '衝陽',
+  '己': '太白', '庚': '合谷', '辛': '太淵', '壬': '京骨', '癸': '太谿',
+};
+
 export function calculateXuNaJia(dayStem: string, hourBranch: string): XuNaJiaResult {
   const getHourStem = (dStem: string, hBranch: string) => {
     const dIdx = HEAVENLY_STEMS.indexOf(dStem);
@@ -219,36 +224,51 @@ export function calculateXuNaJia(dayStem: string, hourBranch: string): XuNaJiaRe
 
   const currentHourStem = getHourStem(dayStem, hourBranch);
   const currentFullHour = currentHourStem + hourBranch;
+  const rootPoint = DAY_STEM_ROOT_POINTS[dayStem];
   
+  // Step 1: Check Daily Formula (Highest Clinical Priority)
+  const dailyPoints = XU_DAILY_FORMULA[dayStem]?.[hourBranch];
+  if (dailyPoints) {
+    const combinedPoints = rootPoint && !dailyPoints.includes(rootPoint) 
+      ? [...dailyPoints, rootPoint] 
+      : dailyPoints;
+
+    return {
+      points: combinedPoints,
+      method: '日干按時開穴',
+      hourStem: currentHourStem,
+      source: `徐鳳《針灸大全》：${dayStem}日${hourBranch}時集氣於${dailyPoints.join('/')}，並配日干原穴${rootPoint}`
+    };
+  }
+
   // Step 2: High Priority Rules (Qi Na San Jiao / Xue Gui Bao Luo)
   const priorityPoint = XU_HIGH_PRIORITY_RULES[currentFullHour];
   if (priorityPoint) {
     const isYangHour = ['甲', '丙', '戊', '庚', '壬'].includes(currentHourStem);
     return {
-      points: [priorityPoint],
+      points: [priorityPoint, rootPoint].filter(Boolean) as string[],
       method: isYangHour ? '氣納三焦 (陽氣之父)' : '血納包絡 (陰血之母)',
       hourStem: currentHourStem,
-      source: '最高優先權 (High Priority)'
+      source: `優先權開穴，並配日干原穴${rootPoint}`
     };
   }
 
-  // Step 3: Check Daily Formula
-  let points = XU_DAILY_FORMULA[dayStem]?.[hourBranch];
-  if (points) {
-    return {
-      points,
-      method: '逐日按時定穴',
-      hourStem: currentHourStem,
-      source: '主穴 (Primary)'
-    };
-  }
-
-  // Step 4: Five Gates Ten Transformations
+  // Step 3: Five Gates Ten Transformations (Transformation Pairs)
   const pairedDay = TRANSFORMATION_PAIRS[dayStem];
   const pairedHourStem = getHourStem(pairedDay, hourBranch);
   const pairedFullHour = pairedHourStem + hourBranch;
   
-  // Check if paired day has priority rule for this hour
+  // Check paired day formula or priority
+  const pairedPoints = XU_DAILY_FORMULA[pairedDay]?.[hourBranch];
+  if (pairedPoints) {
+    return {
+      points: pairedPoints,
+      method: `五門十變 (合化日：${pairedDay}日)`,
+      hourStem: currentHourStem,
+      source: '合化開穴 (Transformation)'
+    };
+  }
+
   const pairedPriorityPoint = XU_HIGH_PRIORITY_RULES[pairedFullHour];
   if (pairedPriorityPoint) {
     const isYangHour = ['甲', '丙', '戊', '庚', '壬'].includes(pairedHourStem);
@@ -260,17 +280,7 @@ export function calculateXuNaJia(dayStem: string, hourBranch: string): XuNaJiaRe
     };
   }
 
-  points = XU_DAILY_FORMULA[pairedDay]?.[hourBranch];
-  if (points) {
-    return {
-      points,
-      method: `五門十變 (合化日：${pairedDay}日)`,
-      hourStem: currentHourStem,
-      source: '合化開穴 (Transformation)'
-    };
-  }
-
-  // Step 5: Na Zi Fa Fallback
+  // Step 4: Na Zi Fa Fallback
   const fallbackPoint = NA_ZI_FA_YUAN_POINTS[hourBranch];
   return {
     points: [fallbackPoint],

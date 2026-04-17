@@ -996,9 +996,11 @@ export default function App() {
                             </div>
                           </div>
                         </div>
-                        <p className="text-base text-tcm-clay/80 italic leading-relaxed">
-                          實則瀉其子，虛則補其母。當令之時，氣血最旺，補母瀉子效果最佳。
-                        </p>
+                        <div className="mt-4 pt-4 border-t border-tcm-gold/10">
+                          <p className="text-sm font-medium text-tcm-ink/80 leading-relaxed bg-tcm-paper p-3 rounded-xl border border-tcm-gold/5 shadow-inner italic">
+                            「實則瀉其子，虛則補其母。當令之時，氣血最旺，補母瀉子效果最佳。」
+                          </p>
+                        </div>
                       </div>
 
                       {/* Method 2: Specific Shu-Stream */}
@@ -1144,15 +1146,6 @@ export default function App() {
                             </div>
                           </div>
 
-                            <div className="space-y-4">
-                              <div className="text-sm text-tcm-clay font-bold uppercase tracking-widest">計算流程 (SOP)</div>
-                              <div className="text-sm text-tcm-clay/80 space-y-2">
-                                <p className={xuNaJiaResult.source.includes('High Priority') ? 'text-tcm-jade font-bold' : ''}>1. 檢查『氣納三焦』或『血歸包絡』</p>
-                                <p className={xuNaJiaResult.source.includes('Primary') ? 'text-tcm-jade font-bold' : ''}>2. 檢索『當日日干』特定開穴</p>
-                                <p className={xuNaJiaResult.source.includes('Transformation') ? 'text-tcm-jade font-bold' : ''}>3. 執行『五門十變』(合化日) 檢索</p>
-                                <p className={xuNaJiaResult.source.includes('Fallback') ? 'text-tcm-jade font-bold' : ''}>4. 執行『納子法』(時辰原穴)</p>
-                              </div>
-                            </div>
                           </div>
                           
                           <p className="text-sm text-tcm-clay/80 leading-relaxed italic font-medium pt-4 border-t-2 border-tcm-gold/10">
