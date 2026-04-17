@@ -138,16 +138,16 @@ export interface NaZiFaDetail {
 
 export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '寅': { meridian: '手太陰肺經', motherPoint: '太淵', motherMeridian: '足少陰腎經', motherMeridianPoint: '復溜', sonPoint: '尺澤', shuStreamPoint: '太淵', backShu: '肺俞', frontMu: '中府', yuanPoint: '太淵', luoPoint: '列缺' },
-  '卯': { meridian: '手陽明大腸經', motherPoint: '曲池', motherMeridian: '足太陽膀胱經', motherMeridianPoint: '至陰', sonPoint: '二間', shuStreamPoint: '三間', backShu: '大腸俞', frontMu: '天樞', yuanPoint: '合谷', luoPoint: '偏歷' },
-  '辰': { meridian: '足陽明胃經', motherPoint: '解谿', motherMeridian: '手陽明大腸經', motherMeridianPoint: '曲池', sonPoint: '厲兌', shuStreamPoint: '陷谷', backShu: '胃俞', frontMu: '中脘', yuanPoint: '衝陽', luoPoint: '豐隆' },
+  '卯': { meridian: '手陽明大腸經', motherPoint: '曲池', motherMeridian: '手太陰肺經', motherMeridianPoint: '太淵', sonPoint: '二間', shuStreamPoint: '三間', backShu: '大腸俞', frontMu: '天樞', yuanPoint: '合谷', luoPoint: '偏歷' },
+  '辰': { meridian: '足陽明胃經', motherPoint: '解谿', motherMeridian: '足太陰脾經', motherMeridianPoint: '大都', sonPoint: '厲兌', shuStreamPoint: '陷谷', backShu: '胃俞', frontMu: '中脘', yuanPoint: '衝陽', luoPoint: '豐隆' },
   '巳': { meridian: '足太陰脾經', motherPoint: '大都', motherMeridian: '手太陰肺經', motherMeridianPoint: '太淵', sonPoint: '商丘', shuStreamPoint: '太白', backShu: '脾俞', frontMu: '章門', yuanPoint: '太白', luoPoint: '公孫' },
   '午': { meridian: '手少陰心經', motherPoint: '少衝', motherMeridian: '足太陰脾經', motherMeridianPoint: '大都', sonPoint: '神門', shuStreamPoint: '神門', backShu: '心俞', frontMu: '巨闕', yuanPoint: '神門', luoPoint: '通里' },
-  '未': { meridian: '手太陽小腸經', motherPoint: '後溪', motherMeridian: '足陽明胃經', motherMeridianPoint: '解谿', sonPoint: '小海', shuStreamPoint: '後溪', backShu: '小腸俞', frontMu: '關元', yuanPoint: '腕骨', luoPoint: '支正' },
-  '申': { meridian: '足太陽膀胱經', motherPoint: '至陰', motherMeridian: '足少陽膽經', motherMeridianPoint: '俠溪', sonPoint: '束骨', shuStreamPoint: '束骨', backShu: '膀胱俞', frontMu: '中極', yuanPoint: '京骨', luoPoint: '飛揚' },
+  '未': { meridian: '手太陽小腸經', motherPoint: '後溪', motherMeridian: '手少陰心經', motherMeridianPoint: '少衝', sonPoint: '小海', shuStreamPoint: '後溪', backShu: '小腸俞', frontMu: '關元', yuanPoint: '腕骨', luoPoint: '支正' },
+  '申': { meridian: '足太陽膀胱經', motherPoint: '至陰', motherMeridian: '足少陰腎經', motherMeridianPoint: '復溜', sonPoint: '束骨', shuStreamPoint: '束骨', backShu: '膀胱俞', frontMu: '中極', yuanPoint: '京骨', luoPoint: '飛揚' },
   '酉': { meridian: '足少陰腎經', motherPoint: '復溜', motherMeridian: '足厥陰肝經', motherMeridianPoint: '曲泉', sonPoint: '湧泉', shuStreamPoint: '太溪', backShu: '腎俞', frontMu: '京門', yuanPoint: '太溪', luoPoint: '大鐘' },
   '戌': { meridian: '手厥陰心包經', motherPoint: '中衝', motherMeridian: '足太陰脾經', motherMeridianPoint: '大都', sonPoint: '大陵', shuStreamPoint: '大陵', backShu: '厥陰俞', frontMu: '膻中', yuanPoint: '大陵', luoPoint: '內關' },
-  '亥': { meridian: '手少陽三焦經', motherPoint: '中渚', motherMeridian: '足陽明胃經', motherMeridianPoint: '解谿', sonPoint: '天井', shuStreamPoint: '中渚', backShu: '三焦俞', frontMu: '石門', yuanPoint: '陽池', luoPoint: '外關' },
-  '子': { meridian: '足少陽膽經', motherPoint: '俠溪', motherMeridian: '手太陽小腸經', motherMeridianPoint: '後溪', sonPoint: '陽輔', shuStreamPoint: '足臨泣', backShu: '膽俞', frontMu: '日月', yuanPoint: '丘墟', luoPoint: '光明' },
+  '亥': { meridian: '手少陽三焦經', motherPoint: '中渚', motherMeridian: '手厥陰心包經', motherMeridianPoint: '中衝', sonPoint: '天井', shuStreamPoint: '中渚', backShu: '三焦俞', frontMu: '石門', yuanPoint: '陽池', luoPoint: '外關' },
+  '子': { meridian: '足少陽膽經', motherPoint: '俠溪', motherMeridian: '足厥陰肝經', motherMeridianPoint: '曲泉', sonPoint: '陽輔', shuStreamPoint: '足臨泣', backShu: '膽俞', frontMu: '日月', yuanPoint: '丘墟', luoPoint: '光明' },
   '丑': { meridian: '足厥陰肝經', motherPoint: '曲泉', motherMeridian: '手少陰心經', motherMeridianPoint: '少衝', sonPoint: '行間', shuStreamPoint: '太衝', backShu: '肝俞', frontMu: '期門', yuanPoint: '太衝', luoPoint: '蠡溝' },
 };
 
@@ -274,9 +274,9 @@ export function calculateXuNaJia(dayStem: string, hourBranch: string): XuNaJiaRe
   const fallbackPoint = NA_ZI_FA_YUAN_POINTS[hourBranch];
   return {
     points: [fallbackPoint],
-    method: '納子法',
+    method: '納甲無穴，回歸納子法',
     hourStem: currentHourStem,
-    source: '時辰原穴 (Fallback)'
+    source: '「午時無穴子時研」，取本經原穴 (時辰原穴)'
   };
 }
 
