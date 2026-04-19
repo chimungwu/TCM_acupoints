@@ -274,6 +274,189 @@ export const NA_JIA_FA_MAP: Record<string, Record<string, string[]>> = {
 export function getNaJiaPoints(dayStem: string, hourBranch: string): string[] {
   return NA_JIA_FA_MAP[dayStem]?.[hourBranch] || [];
 }
+
+/**
+ * 徐鳳《針灸大全》納甲法 — 十大週期結構
+ *
+ * 每個週期以「陽日始戌、陰日始酉」為第一開穴（井穴），共 6 次開穴：
+ *   井 → 滎 → 俞（+ 返本還原） → 經 → 合 → 氣納三焦（陽日） / 血歸包絡（陰日）
+ * 每 6 次開穴橫跨約 22 小時，依時干依序 +2 推進。
+ */
+export interface XuNaJiaCycleOpening {
+  hourStem: string;
+  hourBranch: string;
+  points: string[];
+  meridian: string;
+  shuPoint: string;  // 井 / 滎 / 俞 / 經 / 合 / 氣納三焦 / 血歸包絡
+  note?: string;     // 返本還原等補充說明
+}
+
+export const XU_NA_JIA_CYCLES: Record<string, XuNaJiaCycleOpening[]> = {
+  '甲': [
+    { hourStem: '甲', hourBranch: '戌', points: ['竅陰'],         meridian: '膽經',     shuPoint: '井' },
+    { hourStem: '丙', hourBranch: '子', points: ['前谷'],         meridian: '小腸經',   shuPoint: '滎' },
+    { hourStem: '戊', hourBranch: '寅', points: ['陷谷', '丘墟'], meridian: '胃經',     shuPoint: '俞', note: '俞原同開：膽原穴 丘墟' },
+    { hourStem: '庚', hourBranch: '辰', points: ['陽溪'],         meridian: '大腸經',   shuPoint: '經' },
+    { hourStem: '壬', hourBranch: '午', points: ['委中'],         meridian: '膀胱經',   shuPoint: '合' },
+    { hourStem: '甲', hourBranch: '申', points: ['液門'],         meridian: '三焦經',   shuPoint: '氣納三焦' },
+  ],
+  '乙': [
+    { hourStem: '乙', hourBranch: '酉', points: ['大敦'],         meridian: '肝經',     shuPoint: '井' },
+    { hourStem: '丁', hourBranch: '亥', points: ['少府'],         meridian: '心經',     shuPoint: '滎' },
+    { hourStem: '己', hourBranch: '丑', points: ['太白', '太衝'], meridian: '脾經',     shuPoint: '俞', note: '俞原同開：肝原穴 太衝' },
+    { hourStem: '辛', hourBranch: '卯', points: ['經渠'],         meridian: '肺經',     shuPoint: '經' },
+    { hourStem: '癸', hourBranch: '巳', points: ['陰谷'],         meridian: '腎經',     shuPoint: '合' },
+    { hourStem: '乙', hourBranch: '未', points: ['勞宮'],         meridian: '心包經',   shuPoint: '血歸包絡' },
+  ],
+  '丙': [
+    { hourStem: '丙', hourBranch: '申', points: ['少澤'],         meridian: '小腸經',   shuPoint: '井' },
+    { hourStem: '戊', hourBranch: '戌', points: ['內庭'],         meridian: '胃經',     shuPoint: '滎' },
+    { hourStem: '庚', hourBranch: '子', points: ['三間', '腕骨'], meridian: '大腸經',   shuPoint: '俞', note: '俞原同開：小腸原穴 腕骨' },
+    { hourStem: '壬', hourBranch: '寅', points: ['崑崙'],         meridian: '膀胱經',   shuPoint: '經' },
+    { hourStem: '甲', hourBranch: '辰', points: ['陽陵泉'],       meridian: '膽經',     shuPoint: '合' },
+    { hourStem: '丙', hourBranch: '午', points: ['中渚'],         meridian: '三焦經',   shuPoint: '氣納三焦' },
+  ],
+  '丁': [
+    { hourStem: '丁', hourBranch: '未', points: ['少衝'],         meridian: '心經',     shuPoint: '井' },
+    { hourStem: '己', hourBranch: '酉', points: ['大都'],         meridian: '脾經',     shuPoint: '滎' },
+    { hourStem: '辛', hourBranch: '亥', points: ['太淵', '神門'], meridian: '肺經',     shuPoint: '俞', note: '俞原同開：心原穴 神門' },
+    { hourStem: '癸', hourBranch: '丑', points: ['復溜'],         meridian: '腎經',     shuPoint: '經' },
+    { hourStem: '乙', hourBranch: '卯', points: ['曲泉'],         meridian: '肝經',     shuPoint: '合' },
+    { hourStem: '丁', hourBranch: '巳', points: ['大陵'],         meridian: '心包經',   shuPoint: '血歸包絡' },
+  ],
+  '戊': [
+    { hourStem: '戊', hourBranch: '午', points: ['厲兌'],         meridian: '胃經',     shuPoint: '井' },
+    { hourStem: '庚', hourBranch: '申', points: ['二間'],         meridian: '大腸經',   shuPoint: '滎' },
+    { hourStem: '壬', hourBranch: '戌', points: ['束骨', '衝陽'], meridian: '膀胱經',   shuPoint: '俞', note: '俞原同開：胃原穴 衝陽' },
+    { hourStem: '甲', hourBranch: '子', points: ['陽輔'],         meridian: '膽經',     shuPoint: '經' },
+    { hourStem: '丙', hourBranch: '寅', points: ['小海'],         meridian: '小腸經',   shuPoint: '合' },
+    { hourStem: '戊', hourBranch: '辰', points: ['支溝'],         meridian: '三焦經',   shuPoint: '氣納三焦' },
+  ],
+  '己': [
+    { hourStem: '己', hourBranch: '巳', points: ['隱白'],         meridian: '脾經',     shuPoint: '井' },
+    { hourStem: '辛', hourBranch: '未', points: ['魚際'],         meridian: '肺經',     shuPoint: '滎' },
+    { hourStem: '癸', hourBranch: '酉', points: ['太溪', '太白'], meridian: '腎經',     shuPoint: '俞', note: '俞原同開：脾原穴 太白' },
+    { hourStem: '乙', hourBranch: '亥', points: ['中封'],         meridian: '肝經',     shuPoint: '經' },
+    { hourStem: '丁', hourBranch: '丑', points: ['少海'],         meridian: '心經',     shuPoint: '合' },
+    { hourStem: '己', hourBranch: '卯', points: ['間使'],         meridian: '心包經',   shuPoint: '血歸包絡' },
+  ],
+  '庚': [
+    { hourStem: '庚', hourBranch: '辰', points: ['商陽'],         meridian: '大腸經',   shuPoint: '井' },
+    { hourStem: '壬', hourBranch: '午', points: ['通谷'],         meridian: '膀胱經',   shuPoint: '滎' },
+    { hourStem: '甲', hourBranch: '申', points: ['足臨泣', '合谷'], meridian: '膽經',   shuPoint: '俞', note: '俞原同開：大腸原穴 合谷' },
+    { hourStem: '丙', hourBranch: '戌', points: ['陽谷'],         meridian: '小腸經',   shuPoint: '經' },
+    { hourStem: '戊', hourBranch: '子', points: ['足三里'],       meridian: '胃經',     shuPoint: '合' },
+    { hourStem: '庚', hourBranch: '寅', points: ['天井'],         meridian: '三焦經',   shuPoint: '氣納三焦' },
+  ],
+  '辛': [
+    { hourStem: '辛', hourBranch: '卯', points: ['少商'],         meridian: '肺經',     shuPoint: '井' },
+    { hourStem: '癸', hourBranch: '巳', points: ['然谷'],         meridian: '腎經',     shuPoint: '滎' },
+    { hourStem: '乙', hourBranch: '未', points: ['太衝', '太淵'], meridian: '肝經',     shuPoint: '俞', note: '俞原同開：肺原穴 太淵' },
+    { hourStem: '丁', hourBranch: '酉', points: ['靈道'],         meridian: '心經',     shuPoint: '經' },
+    { hourStem: '己', hourBranch: '亥', points: ['陰陵泉'],       meridian: '脾經',     shuPoint: '合' },
+    { hourStem: '辛', hourBranch: '丑', points: ['曲澤'],         meridian: '心包經',   shuPoint: '血歸包絡' },
+  ],
+  '壬': [
+    { hourStem: '壬', hourBranch: '寅', points: ['至陰'],         meridian: '膀胱經',   shuPoint: '井' },
+    { hourStem: '甲', hourBranch: '辰', points: ['俠溪'],         meridian: '膽經',     shuPoint: '滎' },
+    { hourStem: '丙', hourBranch: '午', points: ['後溪', '京骨'], meridian: '小腸經',   shuPoint: '俞', note: '俞原同開：膀胱原穴 京骨' },
+    { hourStem: '戊', hourBranch: '申', points: ['解溪'],         meridian: '胃經',     shuPoint: '經' },
+    { hourStem: '庚', hourBranch: '戌', points: ['曲池'],         meridian: '大腸經',   shuPoint: '合' },
+    { hourStem: '壬', hourBranch: '子', points: ['關衝'],         meridian: '三焦經',   shuPoint: '氣納三焦' },
+  ],
+  '癸': [
+    { hourStem: '癸', hourBranch: '亥', points: ['湧泉'],         meridian: '腎經',     shuPoint: '井' },
+    { hourStem: '乙', hourBranch: '丑', points: ['行間'],         meridian: '肝經',     shuPoint: '滎' },
+    { hourStem: '丁', hourBranch: '卯', points: ['神門', '太溪'], meridian: '心經',     shuPoint: '俞', note: '俞原同開：腎原穴 太溪' },
+    { hourStem: '己', hourBranch: '巳', points: ['商丘'],         meridian: '脾經',     shuPoint: '經' },
+    { hourStem: '辛', hourBranch: '未', points: ['尺澤'],         meridian: '肺經',     shuPoint: '合' },
+    { hourStem: '癸', hourBranch: '酉', points: ['中衝'],         meridian: '心包經',   shuPoint: '血歸包絡' },
+  ],
+};
+
+export interface XuNaJiaResult {
+  source: string;    // 典籍出處
+  hourStem: string;  // 以「日上起時」算出的本時辰天干
+  method: string;    // 本時辰的開穴說明（週期、井滎俞經合、返本還原等）
+  points: string[];  // 開穴名稱，若為閉穴則為空陣列
+  cycleStem?: string;  // 所屬週期的起始日干（閉穴時為 undefined）
+  position?: number;   // 週期中第幾穴（0~5，閉穴時為 undefined）
+  isOpen: boolean;     // 是否為開穴時辰
+}
+
+/**
+ * 徐鳳《針灸大全》納甲法開穴計算
+ *
+ * 依「日上起時」推出本時辰之天干（時柱），再查對《逐日按時定穴歌》
+ * 六十開穴表，判斷此時辰所屬週期、位次（井滎俞經合/三焦寄穴/心包寄穴），
+ * 並回傳對應開穴。
+ *
+ * @param dayStem   當日日干（日柱天干）
+ * @param hourBranch 本時辰地支
+ */
+export function calculateXuNaJia(dayStem: string, hourBranch: string): XuNaJiaResult {
+  const dayStemIdx = HEAVENLY_STEMS.indexOf(dayStem);
+  const hourBranchIdx = EARTHLY_BRANCHES.indexOf(hourBranch);
+
+  // 日上起時：甲己還加甲、乙庚丙作初、丙辛從戊起、丁壬庚子居、戊癸何方發，壬子是真途
+  const hourStemStartIdx = (dayStemIdx % 5) * 2;
+  const hourStemIdx = ((hourStemStartIdx + hourBranchIdx) % 10 + 10) % 10;
+  const hourStem = HEAVENLY_STEMS[hourStemIdx];
+
+  const points = NA_JIA_FA_MAP[dayStem]?.[hourBranch] ?? [];
+
+  if (points.length === 0) {
+    return {
+      source: '徐鳳《針灸大全》 納甲法',
+      hourStem,
+      method: '閉穴（此時辰非《逐日按時定穴歌》開穴時辰）',
+      points: [],
+      isOpen: false,
+    };
+  }
+
+  // 由 (hourStem, hourBranch) 在十大週期中查出所屬週期與位次
+  let cycleStem: string | undefined;
+  let position: number | undefined;
+  let opening: XuNaJiaCycleOpening | undefined;
+  for (const stem of HEAVENLY_STEMS) {
+    const cycle = XU_NA_JIA_CYCLES[stem];
+    if (!cycle) continue;
+    const idx = cycle.findIndex(o => o.hourStem === hourStem && o.hourBranch === hourBranch);
+    if (idx >= 0) {
+      cycleStem = stem;
+      position = idx;
+      opening = cycle[idx];
+      break;
+    }
+  }
+
+  let method = '開穴';
+  if (opening && cycleStem !== undefined && position !== undefined) {
+    const posLabel = ['第一穴（井）', '第二穴（滎）', '第三穴（俞）', '第四穴（經）', '第五穴（合）', '第六穴'][position] || '';
+    if (opening.shuPoint === '氣納三焦') {
+      method = `${cycleStem}日週期 · ${posLabel} · 氣納三焦（陽日第六穴，寄於三焦經）`;
+    } else if (opening.shuPoint === '血歸包絡') {
+      method = `${cycleStem}日週期 · ${posLabel} · 血歸包絡（陰日第六穴，寄於心包經）`;
+    } else {
+      method = `${cycleStem}日週期 · ${posLabel} · ${opening.meridian}${opening.shuPoint}穴`;
+    }
+    if (opening.note) {
+      method += ` · ${opening.note}`;
+    }
+  }
+
+  return {
+    source: '徐鳳《針灸大全》 納甲法',
+    hourStem,
+    method,
+    points,
+    cycleStem,
+    position,
+    isOpen: true,
+  };
+}
+
 /**
  * Ling Gui Ba Fa (靈龜八法) - Accurate calculation based on provided base numbers
  */
