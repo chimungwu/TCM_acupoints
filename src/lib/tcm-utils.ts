@@ -122,31 +122,203 @@ export const ZI_WU_LIU_ZHU_MAP: Record<string, string> = {
 };
 
 /**
- * Detailed Na Zi Fa Data (納子法詳細資料)
+ * 納子法詳細資料 (Detailed Na Zi Fa Data)
+ *
+ * 結構說明：
+ *   - meridian / element              : 當令經絡及其五行屬性
+ *   - motherPoint / sonPoint          : 本經子母穴（同經補瀉）「實則瀉其子，虛則補其母」
+ *   - motherElementName               : 本經之母五行（例：金之母＝土）
+ *   - motherMeridian / motherMeridianPoint : 他經補法——母經及母經之本母穴
+ *     （母經中與母經自身五行相對應的五輸穴，例：肺虛取脾經土穴太白）
+ *   - sonMeridian    / sonMeridianPoint    : 他經瀉法——子經及子經之本子穴
+ *   - shuStreamPoint                  : 五輸穴之「俞」穴（"病時間時甚者取之俞"）
+ *   - backShu / frontMu               : 背俞／胸募（俞募配穴）
+ *   - yuanPoint / luoPoint            : 原穴／絡穴（原絡配穴）
+ *
+ * 五行生克：木→火→土→金→水→木；陰經井滎俞經合＝木火土金水，陽經井滎俞經合＝金水木火土。
  */
 export interface NaZiFaDetail {
   meridian: string;
+  element: string;
+  motherElementName: string;
+  sonElementName: string;
+  // 本經子母穴
   motherPoint: string;
   sonPoint: string;
+  // 他經補瀉（母經 / 子經）
+  motherMeridian: string;
+  motherMeridianPoint: string;
+  sonMeridian: string;
+  sonMeridianPoint: string;
+  // 五輸俞穴
   shuStreamPoint: string;
+  // 俞募配穴
   backShu: string;
   frontMu: string;
+  // 原絡配穴
+  yuanPoint: string;
+  luoPoint: string;
 }
 
 export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
-  '寅': { meridian: '手太陰肺經', motherPoint: '太淵', sonPoint: '尺澤', shuStreamPoint: '太淵', backShu: '肺俞', frontMu: '中府' },
-  '卯': { meridian: '手陽明大腸經', motherPoint: '曲池', sonPoint: '二間', shuStreamPoint: '三間', backShu: '大腸俞', frontMu: '天樞' },
-  '辰': { meridian: '足陽明胃經', motherPoint: '解谿', sonPoint: '厲兌', shuStreamPoint: '陷谷', backShu: '胃俞', frontMu: '中脘' },
-  '巳': { meridian: '足太陰脾經', motherPoint: '大都', sonPoint: '商丘', shuStreamPoint: '太白', backShu: '脾俞', frontMu: '章門' },
-  '午': { meridian: '手少陰心經', motherPoint: '少衝', sonPoint: '神門', shuStreamPoint: '神門', backShu: '心俞', frontMu: '巨闕' },
-  '未': { meridian: '手太陽小腸經', motherPoint: '後溪', sonPoint: '小海', shuStreamPoint: '後溪', backShu: '小腸俞', frontMu: '關元' },
-  '申': { meridian: '足太陽膀胱經', motherPoint: '至陰', sonPoint: '束骨', shuStreamPoint: '束骨', backShu: '膀胱俞', frontMu: '中極' },
-  '酉': { meridian: '足少陰腎經', motherPoint: '復溜', sonPoint: '湧泉', shuStreamPoint: '太溪', backShu: '腎俞', frontMu: '京門' },
-  '戌': { meridian: '手厥陰心包經', motherPoint: '中衝', sonPoint: '大陵', shuStreamPoint: '大陵', backShu: '厥陰俞', frontMu: '膻中' },
-  '亥': { meridian: '手少陽三焦經', motherPoint: '中渚', sonPoint: '天井', shuStreamPoint: '中渚', backShu: '三焦俞', frontMu: '石門' },
-  '子': { meridian: '足少陽膽經', motherPoint: '俠溪', sonPoint: '陽輔', shuStreamPoint: '足臨泣', backShu: '膽俞', frontMu: '日月' },
-  '丑': { meridian: '足厥陰肝經', motherPoint: '曲泉', sonPoint: '行間', shuStreamPoint: '太衝', backShu: '肝俞', frontMu: '期門' },
+  '寅': {
+    meridian: '手太陰肺經', element: '金',
+    motherElementName: '土', sonElementName: '水',
+    motherPoint: '太淵', sonPoint: '尺澤',
+    motherMeridian: '足太陰脾經', motherMeridianPoint: '太白',
+    sonMeridian: '足少陰腎經', sonMeridianPoint: '陰谷',
+    shuStreamPoint: '太淵',
+    backShu: '肺俞', frontMu: '中府',
+    yuanPoint: '太淵', luoPoint: '列缺',
+  },
+  '卯': {
+    meridian: '手陽明大腸經', element: '金',
+    motherElementName: '土', sonElementName: '水',
+    motherPoint: '曲池', sonPoint: '二間',
+    motherMeridian: '足陽明胃經', motherMeridianPoint: '足三里',
+    sonMeridian: '足太陽膀胱經', sonMeridianPoint: '足通谷',
+    shuStreamPoint: '三間',
+    backShu: '大腸俞', frontMu: '天樞',
+    yuanPoint: '合谷', luoPoint: '偏歷',
+  },
+  '辰': {
+    meridian: '足陽明胃經', element: '土',
+    motherElementName: '火', sonElementName: '金',
+    motherPoint: '解溪', sonPoint: '厲兌',
+    motherMeridian: '手太陽小腸經', motherMeridianPoint: '陽谷',
+    sonMeridian: '手陽明大腸經', sonMeridianPoint: '商陽',
+    shuStreamPoint: '陷谷',
+    backShu: '胃俞', frontMu: '中脘',
+    yuanPoint: '衝陽', luoPoint: '豐隆',
+  },
+  '巳': {
+    meridian: '足太陰脾經', element: '土',
+    motherElementName: '火', sonElementName: '金',
+    motherPoint: '大都', sonPoint: '商丘',
+    motherMeridian: '手少陰心經', motherMeridianPoint: '少府',
+    sonMeridian: '手太陰肺經', sonMeridianPoint: '經渠',
+    shuStreamPoint: '太白',
+    backShu: '脾俞', frontMu: '章門',
+    yuanPoint: '太白', luoPoint: '公孫',
+  },
+  '午': {
+    meridian: '手少陰心經', element: '火',
+    motherElementName: '木', sonElementName: '土',
+    motherPoint: '少衝', sonPoint: '神門',
+    motherMeridian: '足厥陰肝經', motherMeridianPoint: '大敦',
+    sonMeridian: '足太陰脾經', sonMeridianPoint: '太白',
+    shuStreamPoint: '神門',
+    backShu: '心俞', frontMu: '巨闕',
+    yuanPoint: '神門', luoPoint: '通里',
+  },
+  '未': {
+    meridian: '手太陽小腸經', element: '火',
+    motherElementName: '木', sonElementName: '土',
+    motherPoint: '後溪', sonPoint: '小海',
+    motherMeridian: '足少陽膽經', motherMeridianPoint: '足臨泣',
+    sonMeridian: '足陽明胃經', sonMeridianPoint: '足三里',
+    shuStreamPoint: '後溪',
+    backShu: '小腸俞', frontMu: '關元',
+    yuanPoint: '腕骨', luoPoint: '支正',
+  },
+  '申': {
+    meridian: '足太陽膀胱經', element: '水',
+    motherElementName: '金', sonElementName: '木',
+    motherPoint: '至陰', sonPoint: '束骨',
+    motherMeridian: '手陽明大腸經', motherMeridianPoint: '商陽',
+    sonMeridian: '足少陽膽經', sonMeridianPoint: '足臨泣',
+    shuStreamPoint: '束骨',
+    backShu: '膀胱俞', frontMu: '中極',
+    yuanPoint: '京骨', luoPoint: '飛揚',
+  },
+  '酉': {
+    meridian: '足少陰腎經', element: '水',
+    motherElementName: '金', sonElementName: '木',
+    motherPoint: '復溜', sonPoint: '湧泉',
+    motherMeridian: '手太陰肺經', motherMeridianPoint: '經渠',
+    sonMeridian: '足厥陰肝經', sonMeridianPoint: '大敦',
+    shuStreamPoint: '太溪',
+    backShu: '腎俞', frontMu: '京門',
+    yuanPoint: '太溪', luoPoint: '大鐘',
+  },
+  '戌': {
+    meridian: '手厥陰心包經', element: '火',
+    motherElementName: '木', sonElementName: '土',
+    motherPoint: '中衝', sonPoint: '大陵',
+    motherMeridian: '足厥陰肝經', motherMeridianPoint: '大敦',
+    sonMeridian: '足太陰脾經', sonMeridianPoint: '太白',
+    shuStreamPoint: '大陵',
+    backShu: '厥陰俞', frontMu: '膻中',
+    yuanPoint: '大陵', luoPoint: '內關',
+  },
+  '亥': {
+    meridian: '手少陽三焦經', element: '火',
+    motherElementName: '木', sonElementName: '土',
+    motherPoint: '中渚', sonPoint: '天井',
+    motherMeridian: '足少陽膽經', motherMeridianPoint: '足臨泣',
+    sonMeridian: '足陽明胃經', sonMeridianPoint: '足三里',
+    shuStreamPoint: '中渚',
+    backShu: '三焦俞', frontMu: '石門',
+    yuanPoint: '陽池', luoPoint: '外關',
+  },
+  '子': {
+    meridian: '足少陽膽經', element: '木',
+    motherElementName: '水', sonElementName: '火',
+    motherPoint: '俠溪', sonPoint: '陽輔',
+    motherMeridian: '足太陽膀胱經', motherMeridianPoint: '足通谷',
+    sonMeridian: '手太陽小腸經', sonMeridianPoint: '陽谷',
+    shuStreamPoint: '足臨泣',
+    backShu: '膽俞', frontMu: '日月',
+    yuanPoint: '丘墟', luoPoint: '光明',
+  },
+  '丑': {
+    meridian: '足厥陰肝經', element: '木',
+    motherElementName: '水', sonElementName: '火',
+    motherPoint: '曲泉', sonPoint: '行間',
+    motherMeridian: '足少陰腎經', motherMeridianPoint: '陰谷',
+    sonMeridian: '手少陰心經', sonMeridianPoint: '少府',
+    shuStreamPoint: '太衝',
+    backShu: '肝俞', frontMu: '期門',
+    yuanPoint: '太衝', luoPoint: '蠡溝',
+  },
 };
+
+/**
+ * 納子法即時計算結果
+ * 於當令時辰（該經氣血最旺時），依病機需求取穴：
+ *   - 實證 → 瀉本經子穴（自經瀉法）或瀉子經之子穴（他經瀉法）
+ *   - 虛證 → 補本經母穴（自經補法）或補母經之母穴（他經補法）
+ */
+export interface NaZiCalculationResult {
+  shichen: string;              // 當前時辰地支
+  detail: NaZiFaDetail;         // 該時辰所對應之納子法完整資料
+  method: string;               // 本時辰的取穴說明
+  currentPeakMeridian: string;  // 正值當令的經絡名稱
+}
+
+/**
+ * 依時辰地支取得當令經絡納子法資料
+ */
+export function getNaZiDetail(hourBranch: string): NaZiFaDetail | undefined {
+  return NA_ZI_FA_DATA[hourBranch];
+}
+
+/**
+ * 納子法計算：依當前時辰回傳完整的補瀉法資料
+ */
+export function calculateNaZi(hourBranch: string): NaZiCalculationResult | null {
+  const detail = NA_ZI_FA_DATA[hourBranch];
+  if (!detail) return null;
+  const method =
+    `${hourBranch}時當令 ${detail.meridian}（${detail.element}）· ` +
+    `實則瀉子 ${detail.sonPoint}，虛則補母 ${detail.motherPoint}`;
+  return {
+    shichen: hourBranch,
+    detail,
+    method,
+    currentPeakMeridian: detail.meridian,
+  };
+}
 
 export const FIVE_SHU_INDICATIONS = [
   { type: '井', indication: '病在臟者取之井', nanJing: '井主心下滿 (心下脹滿)' },
