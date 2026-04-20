@@ -958,50 +958,96 @@ export default function App() {
                       </div>
 
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        {/* Method 1: Mother-Son */}
-                        <div className="p-6 bg-tcm-paper/50 rounded-2xl border-2 border-tcm-gold/10 space-y-4">
+                        {/* Method 1: Mother-Son (子午流注按時補瀉) */}
+                        <div className="p-6 bg-tcm-paper/50 rounded-2xl border-2 border-tcm-gold/10 space-y-4 md:col-span-2">
                           <h5 className="text-lg font-bold text-tcm-ink flex items-center gap-2">
-                            <Zap size={18} className="text-tcm-cinnabar" /> 補母瀉子法
+                            <Zap size={18} className="text-tcm-cinnabar" /> 補母瀉子法（子午流注按時補瀉）
                           </h5>
-                        <div className="space-y-3">
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-tcm-clay/80 font-bold">實證 (瀉子)</span>
-                            <button 
-                              onClick={() => {
-                                const p = ACUPOINTS.find(ap => ap.name === currentNaZi.sonPoint);
-                                if (p) {
-                                  navigateToPoint(p);
-                                }
-                              }}
-                              className="text-2xl font-serif font-bold text-tcm-cinnabar hover:scale-110 transition-transform"
-                            >
-                              {currentNaZi.sonPoint}
-                            </button>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm text-tcm-clay/80 font-bold">虛證 (補母)</span>
-                            <div className="flex flex-col items-end gap-1">
-                              <span className="text-[10px] text-tcm-clay/60 font-medium">{currentNaZi.motherMeridian}</span>
-                              <button 
-                                onClick={() => {
-                                  const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherMeridianPoint);
-                                  if (p) {
-                                    navigateToPoint(p);
-                                  }
-                                }}
-                                className="text-2xl font-serif font-bold text-tcm-jade hover:scale-110 transition-transform"
-                              >
-                                {currentNaZi.motherMeridianPoint}
-                              </button>
+
+                          {/* 自經補瀉 */}
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="p-4 bg-white rounded-xl border border-tcm-cinnabar/20 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-tcm-clay/80 font-bold">實證 · 瀉本經子穴</span>
+                                <span className="text-[10px] text-tcm-cinnabar font-bold bg-tcm-cinnabar/10 px-2 py-0.5 rounded">迎而奪之</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-tcm-clay/60">於 <b className="text-tcm-ink">{currentNaZi.sonPointShichen}時</b>（本時當令）</span>
+                                <button
+                                  onClick={() => {
+                                    const p = ACUPOINTS.find(ap => ap.name === currentNaZi.sonPoint);
+                                    if (p) navigateToPoint(p);
+                                  }}
+                                  className="text-2xl font-serif font-bold text-tcm-cinnabar hover:scale-110 transition-transform"
+                                >
+                                  {currentNaZi.sonPoint}
+                                </button>
+                              </div>
+                            </div>
+                            <div className="p-4 bg-white rounded-xl border border-tcm-jade/20 space-y-2">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-tcm-clay/80 font-bold">虛證 · 補本經母穴</span>
+                                <span className="text-[10px] text-tcm-jade font-bold bg-tcm-jade/10 px-2 py-0.5 rounded">隨而濟之</span>
+                              </div>
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-tcm-clay/60">於 <b className="text-tcm-ink">{currentNaZi.motherPointShichen}時</b>（次一時辰）</span>
+                                <button
+                                  onClick={() => {
+                                    const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherPoint);
+                                    if (p) navigateToPoint(p);
+                                  }}
+                                  className="text-2xl font-serif font-bold text-tcm-jade hover:scale-110 transition-transform"
+                                >
+                                  {currentNaZi.motherPoint}
+                                </button>
+                              </div>
                             </div>
                           </div>
+
+                          {/* 他經補瀉 */}
+                          <div className="border-t border-tcm-gold/10 pt-4 space-y-3">
+                            <h6 className="text-xs font-bold text-tcm-clay uppercase tracking-widest">他經補瀉（異經補瀉）</h6>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="p-3 bg-tcm-paper rounded-xl border border-tcm-gold/10 flex items-center justify-between">
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[11px] text-tcm-clay/80 font-bold">虛證 · 補母經本穴</span>
+                                  <span className="text-[10px] text-tcm-clay/60">{currentNaZi.motherMeridian} · 於 <b className="text-tcm-ink">{currentNaZi.motherMeridianShichen}時</b></span>
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherMeridianPoint);
+                                    if (p) navigateToPoint(p);
+                                  }}
+                                  className="text-xl font-serif font-bold text-tcm-jade hover:scale-110 transition-transform"
+                                >
+                                  {currentNaZi.motherMeridianPoint}
+                                </button>
+                              </div>
+                              <div className="p-3 bg-tcm-paper rounded-xl border border-tcm-gold/10 flex items-center justify-between">
+                                <div className="flex flex-col gap-0.5">
+                                  <span className="text-[11px] text-tcm-clay/80 font-bold">實證 · 瀉子經本穴</span>
+                                  <span className="text-[10px] text-tcm-clay/60">{currentNaZi.sonMeridian} · 於 <b className="text-tcm-ink">{currentNaZi.sonMeridianShichen}時</b></span>
+                                </div>
+                                <button
+                                  onClick={() => {
+                                    const p = ACUPOINTS.find(ap => ap.name === currentNaZi.sonMeridianPoint);
+                                    if (p) navigateToPoint(p);
+                                  }}
+                                  className="text-xl font-serif font-bold text-tcm-cinnabar hover:scale-110 transition-transform"
+                                >
+                                  {currentNaZi.sonMeridianPoint}
+                                </button>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="pt-3 border-t border-tcm-gold/10">
+                            <p className="text-xs font-medium text-tcm-ink/80 leading-relaxed bg-tcm-paper p-3 rounded-xl border border-tcm-gold/5 shadow-inner italic">
+                              《難經·69難》「虛則補其母，實則瀉其子。」《難經·79難》「迎而奪之者瀉其子也；隨而濟之者補其母也。」
+                              本經氣盛之時（當令）瀉其子穴為迎奪；本經氣衰之時（次一辰）補其母穴為隨濟。
+                            </p>
+                          </div>
                         </div>
-                        <div className="mt-4 pt-4 border-t border-tcm-gold/10">
-                          <p className="text-sm font-medium text-tcm-ink/80 leading-relaxed bg-tcm-paper p-3 rounded-xl border border-tcm-gold/5 shadow-inner italic">
-                            「實則瀉其子，虛則補其母。當令之時，氣血最旺，補母瀉子效果最佳。」
-                          </p>
-                        </div>
-                      </div>
 
                       {/* Method 2: Specific Shu-Stream */}
                       <div className="p-6 bg-tcm-paper/50 rounded-2xl border-2 border-tcm-gold/10 space-y-4">

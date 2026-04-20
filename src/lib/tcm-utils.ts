@@ -122,34 +122,65 @@ export const ZI_WU_LIU_ZHU_MAP: Record<string, string> = {
 };
 
 /**
- * 納子法詳細資料 (Detailed Na Zi Fa Data)
+ * 納子法詳細資料 (Detailed Na Zi Fa Data) — 子午流注 按時補瀉
  *
- * 結構說明：
+ * 理論依據：
+ *   《難經·第六十九難》：「虛則補其母，實則瀉其子。」
+ *   《難經·第七十九難》：「迎而奪之者瀉其子也；隨而濟之者補其母也。」
+ *   《十二經穴子母補瀉歌》：「肺瀉尺澤補太淵，大腸二間曲池間，胃瀉厲兌解溪補，
+ *   脾在商丘大都邊；心先神門後少衝，小腸小海後溪連，膀胱束骨補至陰，腎瀉湧泉復溜焉。
+ *   心包瀉大陵補中衝，三焦瀉天井補中渚，膽瀉陽輔補俠溪，肝瀉行間補曲泉。」
+ *
+ * 子午流注納子法核心：補瀉須配時辰
+ *   1. 實則瀉其子（迎而奪之）
+ *      → 於本經當令時辰，瀉本經子穴。
+ *        例：寅時肺令氣盛 → 寅時瀉尺澤。
+ *   2. 虛則補其母（隨而濟之）
+ *      → 於本經當令之「次一時辰」（本經氣方衰、將去）補本經母穴。
+ *        例：寅時肺令過 → 卯時肺氣衰 → 卯時補太淵。
+ *   3. 他經補瀉（異經補瀉，《針灸大全》）
+ *      → 虛者於母經當令時補母經本穴；實者於子經當令時瀉子經本穴。
+ *        例：肺虛 → 巳時（脾令）補太白(脾本穴)；肺實 → 酉時（腎令）瀉陰谷(腎本穴)。
+ *
+ * 欄位說明：
  *   - meridian / element              : 當令經絡及其五行屬性
- *   - motherPoint / sonPoint          : 本經子母穴（同經補瀉）「實則瀉其子，虛則補其母」
- *   - motherElementName               : 本經之母五行（例：金之母＝土）
- *   - motherMeridian / motherMeridianPoint : 他經補法——母經及母經之本母穴
- *     （母經中與母經自身五行相對應的五輸穴，例：肺虛取脾經土穴太白）
- *   - sonMeridian    / sonMeridianPoint    : 他經瀉法——子經及子經之本子穴
- *   - shuStreamPoint                  : 五輸穴之「俞」穴（"病時間時甚者取之俞"）
+ *   - motherPoint / sonPoint          : 本經母／子穴（自經補瀉穴）
+ *   - motherPointShichen / sonPointShichen : 自經補母／瀉子之時辰
+ *       * sonPointShichen = 本經當令時（即此條目的地支）
+ *       * motherPointShichen = 本經當令後一時辰
+ *   - motherElementName / sonElementName  : 本經之母／子五行
+ *   - motherMeridian / motherMeridianPoint : 他經補法——母經及母經本穴
+ *   - motherMeridianShichen                : 母經當令時辰（他經補母施行之時）
+ *   - sonMeridian    / sonMeridianPoint    : 他經瀉法——子經及子經本穴
+ *   - sonMeridianShichen                   : 子經當令時辰（他經瀉子施行之時）
+ *   - shuStreamPoint                  : 五輸之「俞」穴（《靈樞·順氣一日分為四時》：
+ *                                       「病時間時甚者取之俞」）
  *   - backShu / frontMu               : 背俞／胸募（俞募配穴）
  *   - yuanPoint / luoPoint            : 原穴／絡穴（原絡配穴）
  *
- * 五行生克：木→火→土→金→水→木；陰經井滎俞經合＝木火土金水，陽經井滎俞經合＝金水木火土。
+ * 五輸五行配屬：
+ *   陰經（肺脾心腎肝心包）井滎俞經合 = 木火土金水
+ *   陽經（大腸胃小腸膀胱膽三焦）井滎俞經合 = 金水木火土
+ *   「本穴」＝ 該經中五行屬性與本經自身五行相同者。
+ *   例：肺金＝經穴經渠；脾土＝俞穴太白；胃土＝合穴足三里；小腸火＝經穴陽谷。
  */
 export interface NaZiFaDetail {
   meridian: string;
   element: string;
   motherElementName: string;
   sonElementName: string;
-  // 本經子母穴
+  // 本經子母穴（自經補瀉）
   motherPoint: string;
+  motherPointShichen: string;   // 自經補母之時辰（本經當令次一時辰）
   sonPoint: string;
-  // 他經補瀉（母經 / 子經）
+  sonPointShichen: string;      // 自經瀉子之時辰（本經當令時辰）
+  // 他經補瀉（異經補瀉）
   motherMeridian: string;
   motherMeridianPoint: string;
+  motherMeridianShichen: string;  // 母經當令時辰
   sonMeridian: string;
   sonMeridianPoint: string;
+  sonMeridianShichen: string;     // 子經當令時辰
   // 五輸俞穴
   shuStreamPoint: string;
   // 俞募配穴
@@ -160,13 +191,21 @@ export interface NaZiFaDetail {
   luoPoint: string;
 }
 
+/**
+ * 寅→卯→辰→巳→午→未→申→酉→戌→亥→子→丑 十二時辰依序對應十二經流注：
+ * 肺→大腸→胃→脾→心→小腸→膀胱→腎→心包→三焦→膽→肝
+ *
+ * 故「本經當令時之次一時辰」可由此表推得：
+ *   寅→卯, 卯→辰, ..., 丑→寅
+ */
 export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '寅': {
     meridian: '手太陰肺經', element: '金',
     motherElementName: '土', sonElementName: '水',
-    motherPoint: '太淵', sonPoint: '尺澤',
-    motherMeridian: '足太陰脾經', motherMeridianPoint: '太白',
-    sonMeridian: '足少陰腎經', sonMeridianPoint: '陰谷',
+    motherPoint: '太淵',  motherPointShichen: '卯',  // 寅→卯
+    sonPoint: '尺澤',     sonPointShichen: '寅',
+    motherMeridian: '足太陰脾經', motherMeridianPoint: '太白',  motherMeridianShichen: '巳',
+    sonMeridian: '足少陰腎經',    sonMeridianPoint: '陰谷',      sonMeridianShichen: '酉',
     shuStreamPoint: '太淵',
     backShu: '肺俞', frontMu: '中府',
     yuanPoint: '太淵', luoPoint: '列缺',
@@ -174,9 +213,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '卯': {
     meridian: '手陽明大腸經', element: '金',
     motherElementName: '土', sonElementName: '水',
-    motherPoint: '曲池', sonPoint: '二間',
-    motherMeridian: '足陽明胃經', motherMeridianPoint: '足三里',
-    sonMeridian: '足太陽膀胱經', sonMeridianPoint: '足通谷',
+    motherPoint: '曲池',  motherPointShichen: '辰',
+    sonPoint: '二間',     sonPointShichen: '卯',
+    motherMeridian: '足陽明胃經', motherMeridianPoint: '足三里', motherMeridianShichen: '辰',
+    sonMeridian: '足太陽膀胱經',  sonMeridianPoint: '足通谷',    sonMeridianShichen: '申',
     shuStreamPoint: '三間',
     backShu: '大腸俞', frontMu: '天樞',
     yuanPoint: '合谷', luoPoint: '偏歷',
@@ -184,9 +224,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '辰': {
     meridian: '足陽明胃經', element: '土',
     motherElementName: '火', sonElementName: '金',
-    motherPoint: '解溪', sonPoint: '厲兌',
-    motherMeridian: '手太陽小腸經', motherMeridianPoint: '陽谷',
-    sonMeridian: '手陽明大腸經', sonMeridianPoint: '商陽',
+    motherPoint: '解溪',  motherPointShichen: '巳',
+    sonPoint: '厲兌',     sonPointShichen: '辰',
+    motherMeridian: '手太陽小腸經', motherMeridianPoint: '陽谷', motherMeridianShichen: '未',
+    sonMeridian: '手陽明大腸經',    sonMeridianPoint: '商陽',    sonMeridianShichen: '卯',
     shuStreamPoint: '陷谷',
     backShu: '胃俞', frontMu: '中脘',
     yuanPoint: '衝陽', luoPoint: '豐隆',
@@ -194,9 +235,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '巳': {
     meridian: '足太陰脾經', element: '土',
     motherElementName: '火', sonElementName: '金',
-    motherPoint: '大都', sonPoint: '商丘',
-    motherMeridian: '手少陰心經', motherMeridianPoint: '少府',
-    sonMeridian: '手太陰肺經', sonMeridianPoint: '經渠',
+    motherPoint: '大都',  motherPointShichen: '午',
+    sonPoint: '商丘',     sonPointShichen: '巳',
+    motherMeridian: '手少陰心經', motherMeridianPoint: '少府',  motherMeridianShichen: '午',
+    sonMeridian: '手太陰肺經',    sonMeridianPoint: '經渠',      sonMeridianShichen: '寅',
     shuStreamPoint: '太白',
     backShu: '脾俞', frontMu: '章門',
     yuanPoint: '太白', luoPoint: '公孫',
@@ -204,9 +246,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '午': {
     meridian: '手少陰心經', element: '火',
     motherElementName: '木', sonElementName: '土',
-    motherPoint: '少衝', sonPoint: '神門',
-    motherMeridian: '足厥陰肝經', motherMeridianPoint: '大敦',
-    sonMeridian: '足太陰脾經', sonMeridianPoint: '太白',
+    motherPoint: '少衝',  motherPointShichen: '未',
+    sonPoint: '神門',     sonPointShichen: '午',
+    motherMeridian: '足厥陰肝經', motherMeridianPoint: '大敦',  motherMeridianShichen: '丑',
+    sonMeridian: '足太陰脾經',    sonMeridianPoint: '太白',      sonMeridianShichen: '巳',
     shuStreamPoint: '神門',
     backShu: '心俞', frontMu: '巨闕',
     yuanPoint: '神門', luoPoint: '通里',
@@ -214,9 +257,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '未': {
     meridian: '手太陽小腸經', element: '火',
     motherElementName: '木', sonElementName: '土',
-    motherPoint: '後溪', sonPoint: '小海',
-    motherMeridian: '足少陽膽經', motherMeridianPoint: '足臨泣',
-    sonMeridian: '足陽明胃經', sonMeridianPoint: '足三里',
+    motherPoint: '後溪',  motherPointShichen: '申',
+    sonPoint: '小海',     sonPointShichen: '未',
+    motherMeridian: '足少陽膽經', motherMeridianPoint: '足臨泣', motherMeridianShichen: '子',
+    sonMeridian: '足陽明胃經',    sonMeridianPoint: '足三里',    sonMeridianShichen: '辰',
     shuStreamPoint: '後溪',
     backShu: '小腸俞', frontMu: '關元',
     yuanPoint: '腕骨', luoPoint: '支正',
@@ -224,9 +268,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '申': {
     meridian: '足太陽膀胱經', element: '水',
     motherElementName: '金', sonElementName: '木',
-    motherPoint: '至陰', sonPoint: '束骨',
-    motherMeridian: '手陽明大腸經', motherMeridianPoint: '商陽',
-    sonMeridian: '足少陽膽經', sonMeridianPoint: '足臨泣',
+    motherPoint: '至陰',  motherPointShichen: '酉',
+    sonPoint: '束骨',     sonPointShichen: '申',
+    motherMeridian: '手陽明大腸經', motherMeridianPoint: '商陽', motherMeridianShichen: '卯',
+    sonMeridian: '足少陽膽經',      sonMeridianPoint: '足臨泣',  sonMeridianShichen: '子',
     shuStreamPoint: '束骨',
     backShu: '膀胱俞', frontMu: '中極',
     yuanPoint: '京骨', luoPoint: '飛揚',
@@ -234,9 +279,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '酉': {
     meridian: '足少陰腎經', element: '水',
     motherElementName: '金', sonElementName: '木',
-    motherPoint: '復溜', sonPoint: '湧泉',
-    motherMeridian: '手太陰肺經', motherMeridianPoint: '經渠',
-    sonMeridian: '足厥陰肝經', sonMeridianPoint: '大敦',
+    motherPoint: '復溜',  motherPointShichen: '戌',
+    sonPoint: '湧泉',     sonPointShichen: '酉',
+    motherMeridian: '手太陰肺經', motherMeridianPoint: '經渠',  motherMeridianShichen: '寅',
+    sonMeridian: '足厥陰肝經',    sonMeridianPoint: '大敦',      sonMeridianShichen: '丑',
     shuStreamPoint: '太溪',
     backShu: '腎俞', frontMu: '京門',
     yuanPoint: '太溪', luoPoint: '大鐘',
@@ -244,9 +290,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '戌': {
     meridian: '手厥陰心包經', element: '火',
     motherElementName: '木', sonElementName: '土',
-    motherPoint: '中衝', sonPoint: '大陵',
-    motherMeridian: '足厥陰肝經', motherMeridianPoint: '大敦',
-    sonMeridian: '足太陰脾經', sonMeridianPoint: '太白',
+    motherPoint: '中衝',  motherPointShichen: '亥',
+    sonPoint: '大陵',     sonPointShichen: '戌',
+    motherMeridian: '足厥陰肝經', motherMeridianPoint: '大敦',  motherMeridianShichen: '丑',
+    sonMeridian: '足太陰脾經',    sonMeridianPoint: '太白',      sonMeridianShichen: '巳',
     shuStreamPoint: '大陵',
     backShu: '厥陰俞', frontMu: '膻中',
     yuanPoint: '大陵', luoPoint: '內關',
@@ -254,9 +301,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '亥': {
     meridian: '手少陽三焦經', element: '火',
     motherElementName: '木', sonElementName: '土',
-    motherPoint: '中渚', sonPoint: '天井',
-    motherMeridian: '足少陽膽經', motherMeridianPoint: '足臨泣',
-    sonMeridian: '足陽明胃經', sonMeridianPoint: '足三里',
+    motherPoint: '中渚',  motherPointShichen: '子',
+    sonPoint: '天井',     sonPointShichen: '亥',
+    motherMeridian: '足少陽膽經', motherMeridianPoint: '足臨泣', motherMeridianShichen: '子',
+    sonMeridian: '足陽明胃經',    sonMeridianPoint: '足三里',    sonMeridianShichen: '辰',
     shuStreamPoint: '中渚',
     backShu: '三焦俞', frontMu: '石門',
     yuanPoint: '陽池', luoPoint: '外關',
@@ -264,9 +312,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '子': {
     meridian: '足少陽膽經', element: '木',
     motherElementName: '水', sonElementName: '火',
-    motherPoint: '俠溪', sonPoint: '陽輔',
-    motherMeridian: '足太陽膀胱經', motherMeridianPoint: '足通谷',
-    sonMeridian: '手太陽小腸經', sonMeridianPoint: '陽谷',
+    motherPoint: '俠溪',  motherPointShichen: '丑',
+    sonPoint: '陽輔',     sonPointShichen: '子',
+    motherMeridian: '足太陽膀胱經', motherMeridianPoint: '足通谷', motherMeridianShichen: '申',
+    sonMeridian: '手太陽小腸經',    sonMeridianPoint: '陽谷',      sonMeridianShichen: '未',
     shuStreamPoint: '足臨泣',
     backShu: '膽俞', frontMu: '日月',
     yuanPoint: '丘墟', luoPoint: '光明',
@@ -274,9 +323,10 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
   '丑': {
     meridian: '足厥陰肝經', element: '木',
     motherElementName: '水', sonElementName: '火',
-    motherPoint: '曲泉', sonPoint: '行間',
-    motherMeridian: '足少陰腎經', motherMeridianPoint: '陰谷',
-    sonMeridian: '手少陰心經', sonMeridianPoint: '少府',
+    motherPoint: '曲泉',  motherPointShichen: '寅',
+    sonPoint: '行間',     sonPointShichen: '丑',
+    motherMeridian: '足少陰腎經', motherMeridianPoint: '陰谷',  motherMeridianShichen: '酉',
+    sonMeridian: '手少陰心經',    sonMeridianPoint: '少府',      sonMeridianShichen: '午',
     shuStreamPoint: '太衝',
     backShu: '肝俞', frontMu: '期門',
     yuanPoint: '太衝', luoPoint: '蠡溝',
@@ -285,15 +335,19 @@ export const NA_ZI_FA_DATA: Record<string, NaZiFaDetail> = {
 
 /**
  * 納子法即時計算結果
- * 於當令時辰（該經氣血最旺時），依病機需求取穴：
- *   - 實證 → 瀉本經子穴（自經瀉法）或瀉子經之子穴（他經瀉法）
- *   - 虛證 → 補本經母穴（自經補法）或補母經之母穴（他經補法）
+ *
+ * 子午流注納子法依時辰施治，一個補瀉動作需指定「時辰 + 穴位」：
+ *   - 瀉子：於本經當令時（迎而奪之）瀉本經子穴
+ *   - 補母：於本經當令後一時辰（隨而濟之）補本經母穴
+ *   - 他經補瀉：於母／子經當令時補／瀉母／子經本穴
  */
 export interface NaZiCalculationResult {
   shichen: string;              // 當前時辰地支
   detail: NaZiFaDetail;         // 該時辰所對應之納子法完整資料
-  method: string;               // 本時辰的取穴說明
   currentPeakMeridian: string;  // 正值當令的經絡名稱
+  method: string;               // 本時辰的取穴說明摘要
+  // 於本時辰可執行的動作（若 null 則表示非其施行時辰）
+  currentHourActions: string[]; // 例：['寅時當令 → 瀉肺子穴尺澤（肺實）']
 }
 
 /**
@@ -305,18 +359,50 @@ export function getNaZiDetail(hourBranch: string): NaZiFaDetail | undefined {
 
 /**
  * 納子法計算：依當前時辰回傳完整的補瀉法資料
+ *
+ * 在 hourBranch 這個時辰，除了當令經的瀉子動作外，
+ * 前一時辰當令經的「補母」、母經當令經的「他經補母」、
+ * 子經當令經的「他經瀉子」等，都可能恰好適用於現時辰。
  */
 export function calculateNaZi(hourBranch: string): NaZiCalculationResult | null {
   const detail = NA_ZI_FA_DATA[hourBranch];
   if (!detail) return null;
+
+  const actions: string[] = [];
+  // 1. 本時瀉當令經子穴
+  actions.push(
+    `${hourBranch}時當令「${detail.meridian}」→ 實證瀉本經子穴 ${detail.sonPoint}`
+  );
+  // 2. 若有前一時辰經，其補母時辰正為本時
+  for (const [shichen, d] of Object.entries(NA_ZI_FA_DATA)) {
+    if (shichen === hourBranch) continue;
+    if (d.motherPointShichen === hourBranch) {
+      actions.push(
+        `${hourBranch}時亦為「${d.meridian}」之補母時辰 → 虛證補 ${d.motherPoint}（本經母穴）`
+      );
+    }
+    if (d.motherMeridianShichen === hourBranch && d.motherMeridian === detail.meridian) {
+      actions.push(
+        `${hourBranch}時母經當令，可行他經補母：「${d.meridian}」虛證補 ${d.motherMeridianPoint}（${d.motherMeridian}本穴）`
+      );
+    }
+    if (d.sonMeridianShichen === hourBranch && d.sonMeridian === detail.meridian) {
+      actions.push(
+        `${hourBranch}時子經當令，可行他經瀉子：「${d.meridian}」實證瀉 ${d.sonMeridianPoint}（${d.sonMeridian}本穴）`
+      );
+    }
+  }
+
   const method =
     `${hourBranch}時當令 ${detail.meridian}（${detail.element}）· ` +
-    `實則瀉子 ${detail.sonPoint}，虛則補母 ${detail.motherPoint}`;
+    `本時瀉子 ${detail.sonPoint}，次時（${detail.motherPointShichen}時）補母 ${detail.motherPoint}`;
+
   return {
     shichen: hourBranch,
     detail,
-    method,
     currentPeakMeridian: detail.meridian,
+    method,
+    currentHourActions: actions,
   };
 }
 
