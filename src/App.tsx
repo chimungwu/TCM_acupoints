@@ -986,11 +986,11 @@ export default function App() {
                             </div>
                             <div className="p-4 bg-white rounded-xl border border-tcm-jade/20 space-y-2">
                               <div className="flex items-center justify-between">
-                                <span className="text-xs text-tcm-clay/80 font-bold">虛證 · 補本經母穴</span>
+                                <span className="text-xs text-tcm-clay/80 font-bold">子經虛 · 補子經母穴</span>
                                 <span className="text-[10px] text-tcm-jade font-bold bg-tcm-jade/10 px-2 py-0.5 rounded">隨而濟之</span>
                               </div>
                               <div className="flex items-center justify-between">
-                                <span className="text-xs text-tcm-clay/60">於 <b className="text-tcm-ink">{currentNaZi.motherPointShichen}時</b>（次一時辰）</span>
+                                <span className="text-xs text-tcm-clay/60">{currentNaZi.motherPointMeridian} · 於 <b className="text-tcm-ink">{currentNaZi.motherPointShichen}時</b>（本時當令）</span>
                                 <button
                                   onClick={() => {
                                     const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherPoint);
@@ -1044,7 +1044,7 @@ export default function App() {
                           <div className="pt-3 border-t border-tcm-gold/10">
                             <p className="text-xs font-medium text-tcm-ink/80 leading-relaxed bg-tcm-paper p-3 rounded-xl border border-tcm-gold/5 shadow-inner italic">
                               《難經·69難》「虛則補其母，實則瀉其子。」《難經·79難》「迎而奪之者瀉其子也；隨而濟之者補其母也。」
-                              本經氣盛之時（當令）瀉其子穴為迎奪；本經氣衰之時（次一辰）補其母穴為隨濟。
+                              本經當令氣盛之時：取本經子穴瀉本經實（迎奪），取子經母穴補子經虛（隨濟）；二者並行，同得時助。
                             </p>
                           </div>
                         </div>
