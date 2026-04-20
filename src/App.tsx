@@ -964,15 +964,16 @@ export default function App() {
                             <Zap size={18} className="text-tcm-cinnabar" /> 補母瀉子法（子午流注按時補瀉）
                           </h5>
 
-                          {/* 自經補瀉 */}
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {/* 自經補瀉 · 並陳兩軌 */}
+                          <div className="space-y-4">
+                            {/* 瀉法（主法甲乙共用） */}
                             <div className="p-4 bg-white rounded-xl border border-tcm-cinnabar/20 space-y-2">
                               <div className="flex items-center justify-between">
                                 <span className="text-xs text-tcm-clay/80 font-bold">實證 · 瀉本經子穴</span>
                                 <span className="text-[10px] text-tcm-cinnabar font-bold bg-tcm-cinnabar/10 px-2 py-0.5 rounded">迎而奪之</span>
                               </div>
                               <div className="flex items-center justify-between">
-                                <span className="text-xs text-tcm-clay/60">於 <b className="text-tcm-ink">{currentNaZi.sonPointShichen}時</b>（本時當令）</span>
+                                <span className="text-xs text-tcm-clay/60">{currentNaZi.meridian} · 於 <b className="text-tcm-ink">{currentNaZi.sonPointShichen}時</b>（本時當令）</span>
                                 <button
                                   onClick={() => {
                                     const p = ACUPOINTS.find(ap => ap.name === currentNaZi.sonPoint);
@@ -984,22 +985,50 @@ export default function App() {
                                 </button>
                               </div>
                             </div>
-                            <div className="p-4 bg-white rounded-xl border border-tcm-jade/20 space-y-2">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-tcm-clay/80 font-bold">子經虛 · 補子經母穴</span>
-                                <span className="text-[10px] text-tcm-jade font-bold bg-tcm-jade/10 px-2 py-0.5 rounded">隨而濟之</span>
+
+                            {/* 補法並陳：主法甲（本經次時）· 主法乙（本時子經母） */}
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                              <div className="p-4 bg-white rounded-xl border border-tcm-jade/20 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs text-tcm-clay/80 font-bold">虛證 · 補前一經母穴</span>
+                                  <span className="text-[10px] text-tcm-jade font-bold bg-tcm-jade/10 px-2 py-0.5 rounded">主法甲 · 隨而濟之</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs text-tcm-clay/60">{currentNaZi.prevMeridian} · 本時為其<b className="text-tcm-ink">次時</b>（氣方衰）</span>
+                                  <button
+                                    onClick={() => {
+                                      const p = ACUPOINTS.find(ap => ap.name === currentNaZi.prevMotherPoint);
+                                      if (p) navigateToPoint(p);
+                                    }}
+                                    className="text-2xl font-serif font-bold text-tcm-jade hover:scale-110 transition-transform"
+                                  >
+                                    {currentNaZi.prevMotherPoint}
+                                  </button>
+                                </div>
+                                <p className="text-[10px] text-tcm-clay/60 italic pt-1 border-t border-tcm-gold/5">
+                                  《十二經穴子母補瀉歌》＋《難經·79難》本經迎隨。
+                                </p>
                               </div>
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-tcm-clay/60">{currentNaZi.motherPointMeridian} · 於 <b className="text-tcm-ink">{currentNaZi.motherPointShichen}時</b>（本時當令）</span>
-                                <button
-                                  onClick={() => {
-                                    const p = ACUPOINTS.find(ap => ap.name === currentNaZi.motherPoint);
-                                    if (p) navigateToPoint(p);
-                                  }}
-                                  className="text-2xl font-serif font-bold text-tcm-jade hover:scale-110 transition-transform"
-                                >
-                                  {currentNaZi.motherPoint}
-                                </button>
+                              <div className="p-4 bg-white rounded-xl border border-tcm-jade/20 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs text-tcm-clay/80 font-bold">虛證 · 補子經母穴</span>
+                                  <span className="text-[10px] text-tcm-jade font-bold bg-tcm-jade/10 px-2 py-0.5 rounded">主法乙 · 本時雙軌</span>
+                                </div>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-xs text-tcm-clay/60">{currentNaZi.childMeridian} · 於 <b className="text-tcm-ink">{currentNaZi.sonPointShichen}時</b>（本時氣盛）</span>
+                                  <button
+                                    onClick={() => {
+                                      const p = ACUPOINTS.find(ap => ap.name === currentNaZi.childMotherPoint);
+                                      if (p) navigateToPoint(p);
+                                    }}
+                                    className="text-2xl font-serif font-bold text-tcm-jade hover:scale-110 transition-transform"
+                                  >
+                                    {currentNaZi.childMotherPoint}
+                                  </button>
+                                </div>
+                                <p className="text-[10px] text-tcm-clay/60 italic pt-1 border-t border-tcm-gold/5">
+                                  徐鳳《針灸大全》本時雙軌（本經氣盛，子經母氣亦旺）。
+                                </p>
                               </div>
                             </div>
                           </div>
@@ -1044,7 +1073,9 @@ export default function App() {
                           <div className="pt-3 border-t border-tcm-gold/10">
                             <p className="text-xs font-medium text-tcm-ink/80 leading-relaxed bg-tcm-paper p-3 rounded-xl border border-tcm-gold/5 shadow-inner italic">
                               《難經·69難》「虛則補其母，實則瀉其子。」《難經·79難》「迎而奪之者瀉其子也；隨而濟之者補其母也。」
-                              本經當令氣盛之時：取本經子穴瀉本經實（迎奪），取子經母穴補子經虛（隨濟）；二者並行，同得時助。
+                              本經當令本時瀉子（迎奪）；補法則並陳兩軌——主法甲（本經迎隨，《十二經穴子母補瀉歌》）於次時補本經母，
+                              即本時補前一當令經之母穴；主法乙（徐鳳《針灸大全》本時雙軌）於本時取子經母穴補子經虛。
+                              兩法理路殊途同歸，臨證可擇時施用、亦可並行。
                             </p>
                           </div>
                         </div>
